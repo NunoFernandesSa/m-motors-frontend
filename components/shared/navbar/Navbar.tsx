@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button"; // shadcn/ui
 import useAuthStore from "@/store/authStore";
+import Image from "next/image";
 
 function Navbar() {
   const pathname = usePathname();
@@ -14,15 +15,24 @@ function Navbar() {
     userGroups.includes("commercial") || userGroups.includes("admin");
   const isAdmin = userGroups.includes("admin");
 
+  const logo = "/images/logo.png"; // Chemin vers votre logo
+
   return (
     <nav className="border-b bg-background">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        {/* Logo / Marque */}
+        {/* ----- Logo / Brand ----- */}
         <Link href="/" className="text-xl font-bold">
+          <Image
+            src={logo}
+            alt="M-Motors Logo"
+            width={64}
+            height={64}
+            className="inline-block mr-2"
+          />
           M-Motors
         </Link>
 
-        {/* Liens centraux (publics) */}
+        {/* ----- Central Links (publics) ----- */}
         <div className="hidden md:flex gap-6">
           <Link
             href="/vehicles"
@@ -60,7 +70,7 @@ function Navbar() {
           )}
         </div>
 
-        {/* actions (publics) */}
+        {/* ----- actions (publics) ----- */}
         <div className="flex items-center gap-2">
           {!isAuthenticated ? (
             <>

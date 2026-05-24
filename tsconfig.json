@@ -23,6 +23,7 @@
       "@components/*": ["./components/*"],
       "@lib/*": ["./lib/*"],
       "@styles/*": ["./assets/styles/*"],
+      "@public/*": ["./public/*"]
     }
   },
   "include": [
