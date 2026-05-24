@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import api from "@/lib/api";
-import jwtDecode from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 
 const useAuthStore = create(
   persist(
@@ -49,8 +49,8 @@ const useAuthStore = create(
       },
     }),
     {
-      name: "auth-storage", // nom de la clé dans le localStorage
-      getStorage: () => localStorage, // utiliser localStorage pour la persistance
+      name: "auth-storage", // localStorage key
+      getStorage: () => localStorage, // localStorage for persistence (default: localStorage)
     },
   ),
 );
