@@ -8,6 +8,7 @@ import Image from "next/image";
 import { User, LogOut, Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { NAV_LINKS } from "@/constants/navlinks";
+import MobileMenuButton from "./MobileMenuButton";
 
 function Navbar() {
   const pathname = usePathname();
@@ -109,17 +110,10 @@ function Navbar() {
         </div>
 
         {/* Mobile Menu Button */}
-        <button
-          className="md:hidden p-2 rounded-md hover:bg-accent"
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          aria-label={isMobileMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
-        >
-          {isMobileMenuOpen ? (
-            <X className="h-5 w-5" />
-          ) : (
-            <Menu className="h-5 w-5" />
-          )}
-        </button>
+        <MobileMenuButton
+          isMobileMenuOpen={isMobileMenuOpen}
+          setIsMobileMenuOpen={setIsMobileMenuOpen}
+        />
       </div>
 
       {/* Mobile Menu Drawer */}
