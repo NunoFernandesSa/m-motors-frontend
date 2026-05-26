@@ -9,6 +9,7 @@ import { User, LogOut, Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { NAV_LINKS } from "@/constants/navlinks";
 import MobileMenuButton from "./MobileMenuButton";
+import Logo from "./Logo";
 
 function Navbar() {
   const pathname = usePathname();
@@ -34,8 +35,6 @@ function Navbar() {
     userGroups.includes("commercial") || userGroups.includes("admin");
   const isAdmin = userGroups.includes("admin");
 
-  const logo = "/images/logo.png";
-
   const visibleLinks = NAV_LINKS.filter((link) => {
     if (link.public) return true;
     if (!isAuthenticated) return false;
@@ -53,17 +52,7 @@ function Navbar() {
     >
       <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
         {/* Logo & Brand */}
-        <Link href="/" className="flex items-center gap-2 font-bold text-xl">
-          <Image
-            src={logo}
-            alt="M-Motors Logo"
-            width={40}
-            height={40}
-            className="h-8 w-auto"
-            priority
-          />
-          <span className="hidden sm:inline">M-Motors</span>
-        </Link>
+        <Logo />
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex gap-6">
