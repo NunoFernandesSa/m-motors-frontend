@@ -48,3 +48,19 @@ export interface VehicleState {
   loadMore: () => Promise<void>;
   clearVehicles: () => void;
 }
+
+/**
+ * ----- Vehicle Filters Component -----
+ * Interface représents a vehicle filters
+ */
+export interface Filters {
+  offer_type: string;
+  brand: string;
+  search: string;
+  min_price: string;
+  max_price: string;
+}
+export interface FilterSidebarProps {
+  filters: Filters;
+  onFilterChange: (key: keyof Filters, value: string) => void;
+}

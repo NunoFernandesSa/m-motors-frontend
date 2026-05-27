@@ -8,19 +8,7 @@ import {
 } from "../ui/select";
 import { Separator } from "../ui/separator";
 import { Input } from "../ui/input";
-
-interface Filters {
-  offer_type: string;
-  brand: string;
-  search: string;
-  min_price: string;
-  max_price: string;
-}
-
-interface FilterSidebarProps {
-  filters: Filters;
-  onFilterChange: (key: keyof Filters, value: string) => void;
-}
+import { FilterSidebarProps } from "@/types";
 
 function FilterSidebar({ filters, onFilterChange }: FilterSidebarProps) {
   return (
@@ -29,13 +17,15 @@ function FilterSidebar({ filters, onFilterChange }: FilterSidebarProps) {
         <Label htmlFor="offer_type">Type d&apos;offre</Label>
         <Select
           value={filters.offer_type}
-          onValueChange={(val) => onFilterChange("offer_type", val)}
+          onValueChange={(val) =>
+            onFilterChange("offer_type", val === "all" ? "" : val)
+          }
         >
           <SelectTrigger id="offer_type">
             <SelectValue placeholder="Tous" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">Tous</SelectItem>
+            <SelectItem value="all">Tous</SelectItem>
             <SelectItem value="achat">Achat</SelectItem>
             <SelectItem value="location">Location LLD</SelectItem>
           </SelectContent>
