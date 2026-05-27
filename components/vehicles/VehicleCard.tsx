@@ -2,25 +2,23 @@ import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 import { Badge } from "../ui/badge";
-
-interface Vehicle {
-  id: number;
-  brand: string;
-  model: string;
-  price: number;
-  offer_type: "achat" | "location";
-  image?: string;
-  year?: number;
-  mileage?: number;
-}
+import { Vehicle } from "@/types";
 
 function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
+  const displayPrice =
+    vehicle.vehicle_type === "sale"
+      ? `${parseInt(vehicle.sale_price || "0").toLocaleString()} €`
+      : `${parseInt(vehicle.rent_price || "0").toLocaleString()} € / mois`;
+
+  const offerLabel = vehicle.vehicle_type === "sale" ? "Achat" : "Location LLD";
+  const imageUrl = vehicle.images || "/images/placeholder-car.jpg";
+
   return (
     <Link href={`/vehicles/${vehicle.id}`}>
       <Card className="h-full overflow-hidden hover:shadow-lg transition-shadow">
         <div className="relative h-48 w-full bg-muted">
           <Image
-            src={vehicle.image || "/images/placeholder-car.jpg"}
+            src={imageUrl}
             alt={`${vehicle.brand} ${vehicle.model}`}
             fill
             className="object-cover"
@@ -35,18 +33,16 @@ function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
           )}
         </CardHeader>
         <CardContent className="p-4 pt-2">
-          <p className="text-2xl font-bold text-primary">
-            {vehicle.price.toLocaleString()} €
-          </p>
+          <p className="text-2xl font-bold text-primary">{displayPrice}</p>
           {vehicle.mileage && (
             <p className="text-sm">{vehicle.mileage.toLocaleString()} km</p>
           )}
         </CardContent>
         <CardFooter className="p-4 pt-0">
           <Badge
-            variant={vehicle.offer_type === "achat" ? "default" : "secondary"}
+            variant={vehicle.vehicle_type === "sale" ? "default" : "secondary"}
           >
-            {vehicle.offer_type === "achat" ? "Achat" : "Location LLD"}
+            {offerLabel}
           </Badge>
         </CardFooter>
       </Card>

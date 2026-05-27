@@ -8,7 +8,7 @@ import {
 import { AlertTriangle } from "lucide-react";
 import { Button } from "../ui/button";
 
-export function ErrorCard({
+export function ErrorMessage({
   message,
   onRetry,
 }: {

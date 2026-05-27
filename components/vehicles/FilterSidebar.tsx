@@ -14,20 +14,17 @@ function FilterSidebar({ filters, onFilterChange }: FilterSidebarProps) {
   return (
     <div className="space-y-6">
       <div>
-        <Label htmlFor="offer_type">Type d&apos;offre</Label>
+        <Label htmlFor="vehicle_type">Type d&apos;offre</Label>
         <Select
-          value={filters.offer_type}
-          onValueChange={(val) =>
-            onFilterChange("offer_type", val === "all" ? "" : val)
-          }
+          value={filters.vehicle_type}
+          onValueChange={(val) => onFilterChange("vehicle_type", val)}
         >
-          <SelectTrigger id="offer_type">
-            <SelectValue placeholder="Tous" />
+          <SelectTrigger id="vehicle_type">
+            <SelectValue placeholder="Type d'offre" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Tous</SelectItem>
-            <SelectItem value="achat">Achat</SelectItem>
-            <SelectItem value="location">Location LLD</SelectItem>
+            <SelectItem value="sale">Achat</SelectItem>
+            <SelectItem value="rent">Location LLD</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -48,8 +45,8 @@ function FilterSidebar({ filters, onFilterChange }: FilterSidebarProps) {
         <Label htmlFor="search">Recherche (modèle)</Label>
         <Input
           id="search"
-          value={filters.search}
-          onChange={(e) => onFilterChange("search", e.target.value)}
+          value={filters.model}
+          onChange={(e) => onFilterChange("model", e.target.value)}
           placeholder="Clio, Mégane..."
         />
       </div>

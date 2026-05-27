@@ -8,14 +8,14 @@ export const useVehicleStore = create<VehicleState>()((set, get) => ({
   loading: false,
   error: null,
   filters: {
-    offer_type: "",
+    vehicle_type: "",
     brand: "",
-    search: "",
+    model: "",
     min_price: "",
     max_price: "",
   },
   page: 1,
-  pageSize: 10, // fetch 10 vehicles at a time
+  pageSize: 12, // fetch 12 vehicles at a time
   hasMore: true,
 
   setFilters: (newFilters) => {
@@ -32,9 +32,9 @@ export const useVehicleStore = create<VehicleState>()((set, get) => ({
   resetFilters: () => {
     set({
       filters: {
-        offer_type: "",
+        vehicle_type: "",
         brand: "",
-        search: "",
+        model: "",
         min_price: "",
         max_price: "",
       },
@@ -56,9 +56,10 @@ export const useVehicleStore = create<VehicleState>()((set, get) => ({
     try {
       // Build request parameters
       const params = new URLSearchParams();
-      if (filters.offer_type) params.append("offer_type", filters.offer_type);
+      if (filters.vehicle_type)
+        params.append("vehicle_type", filters.vehicle_type);
       if (filters.brand) params.append("brand", filters.brand);
-      if (filters.search) params.append("search", filters.search);
+      if (filters.model) params.append("model", filters.model);
       if (filters.min_price) params.append("min_price", filters.min_price);
       if (filters.max_price) params.append("max_price", filters.max_price);
       params.append("page", page.toString());
@@ -68,7 +69,8 @@ export const useVehicleStore = create<VehicleState>()((set, get) => ({
       if (!response.ok) throw new Error("Erreur de chargement");
 
       const data = await response.json();
-      // Handle pagination data
+
+      // Handle pagination data from API
       const newVehicles = data.results || data;
       const total = data.count || newVehicles.length;
 

@@ -14,35 +14,32 @@ export interface Vehicle {
   id: number;
   brand: string;
   model: string;
-  price: number;
-  offer_type: "achat" | "location";
-  image?: string;
-  year?: number;
-  mileage?: number;
+  year: number;
+  mileage: number;
+  fuel_type: string;
+  transmission: string;
+  color: string;
+  description: string;
+  images?: string;
+  vehicle_type: "sale" | "rent";
+  sale_price?: string;
+  rent_price?: string;
+  rent_duration_min?: number;
+  is_available: boolean;
+  created_at: string;
+  updated_at: string;
+  price?: string;
 }
-
-/**
- * ----- Zustand State -----
- * Interface représents a vehicle state
- */
 export interface VehicleState {
   vehicles: Vehicle[];
   totalCount: number;
   loading: boolean;
   error: string | null;
-  filters: {
-    offer_type: string;
-    brand: string;
-    search: string;
-    min_price: string;
-    max_price: string;
-  };
-  // Pagination
+  filters: Filters;
   page: number;
   pageSize: number;
   hasMore: boolean;
-  // Actions
-  setFilters: (filters: Partial<VehicleState["filters"]>) => void;
+  setFilters: (filters: Partial<Filters>) => void;
   resetFilters: () => void;
   fetchVehicles: (reset?: boolean) => Promise<void>;
   loadMore: () => Promise<void>;
@@ -54,9 +51,9 @@ export interface VehicleState {
  * Interface représents a vehicle filters
  */
 export interface Filters {
-  offer_type: string;
+  vehicle_type: string; // 'sale', 'rent', ou ''
   brand: string;
-  search: string;
+  model: string; // search text
   min_price: string;
   max_price: string;
 }
