@@ -1,10 +1,26 @@
+/**
+ * @license: MIT
+ * @author: nuno fernandes
+ * @Copyright (c) 2026 m-motors. All rights reserved.
+ */
+
+// ----- React & Next.js -----
 import Image from "next/image";
 import Link from "next/link";
+// ----- Shadcn UI -----
 import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 import { Badge } from "../ui/badge";
+// ----- Types -----
 import { Vehicle } from "@/types";
+import { JSX } from "react";
 
-function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
+/**
+ * VehicleCard component that displays a vehicle information card
+ * @param {Object} props - The component props
+ * @param {Vehicle} props.vehicle - The vehicle object to display
+ * @returns {JSX.Element} The rendered VehicleCard component
+ */
+function VehicleCard({ vehicle }: { vehicle: Vehicle }): JSX.Element {
   const displayPrice =
     vehicle.vehicle_type === "sale"
       ? `${parseInt(vehicle.sale_price || "0").toLocaleString()} €`

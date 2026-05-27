@@ -1,3 +1,7 @@
+/**
+ * ----- Mobile Menu Button Component -----
+ * Interface représents a mobile menu button component
+ */
 export interface MobileMenuButtonProps {
   ariaMobileMenuOpenlabel?: string;
   ariaMobileMenuCloseLabel?: string;
@@ -60,4 +64,13 @@ export interface Filters {
 export interface FilterSidebarProps {
   filters: Filters;
   onFilterChange: (key: keyof Filters, value: string) => void;
+}
+
+/**
+ * ----- Error Message Component -----
+ * Interface représents a error message component
+ */
+export interface ErrorMessageProps {
+  message: string;
+  onRetry?: () => void;
 }

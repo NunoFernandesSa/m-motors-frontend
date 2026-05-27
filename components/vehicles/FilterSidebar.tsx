@@ -1,3 +1,12 @@
+/**
+ * @license: MIT
+ * @author: nuno fernandes
+ * @Copyright (c) 2026 m-motors. All rights reserved.
+ */
+
+// ----- React & Next.js -----
+import { JSX } from "react";
+// ----- Shadcn UI -----
 import { Label } from "../ui/label";
 import {
   Select,
@@ -8,9 +17,19 @@ import {
 } from "../ui/select";
 import { Separator } from "../ui/separator";
 import { Input } from "../ui/input";
+// ----- Types -----
 import { FilterSidebarProps } from "@/types";
 
-function FilterSidebar({ filters, onFilterChange }: FilterSidebarProps) {
+/**
+ * FilterSidebar component that displays a sidebar with filter options for vehicle search
+ * @param {Object} props - The component props
+ * @param {FilterSidebarProps} props - The filter sidebar props
+ * @returns {JSX.Element} The rendered FilterSidebar component
+ */
+function FilterSidebar({
+  filters,
+  onFilterChange,
+}: FilterSidebarProps): JSX.Element {
   return (
     <div className="space-y-6">
       <div>

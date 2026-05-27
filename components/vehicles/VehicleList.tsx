@@ -1,15 +1,29 @@
 "use client";
 
+/**
+ * @license: MIT
+ * @author: nuno fernandes
+ * @Copyright (c) 2026 m-motors. All rights reserved.
+ */
+
+// ----- React & Next.js -----
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect } from "react";
+import { JSX, useCallback, useEffect } from "react";
+// ----- Shadcn UI -----
+import { Skeleton } from "../ui/skeleton";
+import { Button } from "../ui/button";
+// ----- Components -----
 import VehicleCard from "./VehicleCard";
 import FilterSidebar from "./FilterSidebar";
-import { Skeleton } from "../ui/skeleton";
-import { useVehicleStore } from "@/store/vehicleStore";
-import { Button } from "../ui/button";
 import { ErrorMessage } from "@components/shared/ErrorMessage";
+// ----- Store -----
+import { useVehicleStore } from "@/store/vehicleStore";
 
-const VehicleList = () => {
+/**
+ * VehicleList component that displays a list of vehicles with filters and pagination
+ * @returns {JSX.Element} The rendered VehicleList component
+ */
+const VehicleList = (): JSX.Element => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const {
