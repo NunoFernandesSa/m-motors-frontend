@@ -4,10 +4,7 @@ export default function Home() {
   return (
     <>
       <header></header>
-      <main></main>
-      <footer>
-        <Footer />
-      </footer>
+      <main className="container"></main>
     </>
   );
 }
