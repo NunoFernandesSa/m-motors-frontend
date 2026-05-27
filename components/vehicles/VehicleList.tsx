@@ -7,6 +7,7 @@ import FilterSidebar from "./FilterSidebar";
 import { Skeleton } from "../ui/skeleton";
 import { useVehicleStore } from "@/store/vehicleStore";
 import { Button } from "../ui/button";
+import { ErrorCard } from "../shared/ErrorMessage";
 
 const VehicleList = () => {
   const searchParams = useSearchParams();
@@ -77,7 +78,7 @@ const VehicleList = () => {
 
   if (error) {
     return (
-      <div className="text-center text-red-500 py-10">Erreur : {error}</div>
+      <ErrorCard message={"Une erreur est survenue"} onRetry={fetchVehicles} />
     );
   }
 
