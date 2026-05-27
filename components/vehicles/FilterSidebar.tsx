@@ -1,12 +1,12 @@
+"use client";
+
 /**
  * @license: MIT
  * @author: nuno fernandes
  * @Copyright (c) 2026 m-motors. All rights reserved.
  */
 
-// ----- React & Next.js -----
 import { JSX } from "react";
-// ----- Shadcn UI -----
 import { Label } from "../ui/label";
 import {
   Select,
@@ -17,18 +17,17 @@ import {
 } from "../ui/select";
 import { Separator } from "../ui/separator";
 import { Input } from "../ui/input";
-// ----- Types -----
+import { Button } from "../ui/button";
 import { FilterSidebarProps } from "@/types";
 
-/**
- * FilterSidebar component that displays a sidebar with filter options for vehicle search
- * @param {Object} props - The component props
- * @param {FilterSidebarProps} props - The filter sidebar props
- * @returns {JSX.Element} The rendered FilterSidebar component
- */
-function FilterSidebar({
+export default function FilterSidebar({
   filters,
-  onFilterChange,
+  onVehicleTypeChange,
+  onBrandChange,
+  onModelChange,
+  onMinPriceChange,
+  onMaxPriceChange,
+  onReset,
 }: FilterSidebarProps): JSX.Element {
   return (
     <div className="space-y-6">
@@ -36,7 +35,7 @@ function FilterSidebar({
         <Label htmlFor="vehicle_type">Type d&apos;offre</Label>
         <Select
           value={filters.vehicle_type}
-          onValueChange={(val) => onFilterChange("vehicle_type", val)}
+          onValueChange={onVehicleTypeChange}
         >
           <SelectTrigger id="vehicle_type">
             <SelectValue placeholder="Type d'offre" />
@@ -55,17 +54,17 @@ function FilterSidebar({
         <Input
           id="brand"
           value={filters.brand}
-          onChange={(e) => onFilterChange("brand", e.target.value)}
+          onChange={(e) => onBrandChange(e.target.value)}
           placeholder="Ex: Renault"
         />
       </div>
 
       <div>
-        <Label htmlFor="search">Recherche (modèle)</Label>
+        <Label htmlFor="model">Recherche (modèle)</Label>
         <Input
-          id="search"
+          id="model"
           value={filters.model}
-          onChange={(e) => onFilterChange("model", e.target.value)}
+          onChange={(e) => onModelChange(e.target.value)}
           placeholder="Clio, Mégane..."
         />
       </div>
@@ -79,7 +78,8 @@ function FilterSidebar({
             id="min_price"
             type="number"
             value={filters.min_price}
-            onChange={(e) => onFilterChange("min_price", e.target.value)}
+            onChange={(e) => onMinPriceChange(e.target.value)}
+            placeholder="0"
           />
         </div>
         <div>
@@ -88,12 +88,15 @@ function FilterSidebar({
             id="max_price"
             type="number"
             value={filters.max_price}
-            onChange={(e) => onFilterChange("max_price", e.target.value)}
+            onChange={(e) => onMaxPriceChange(e.target.value)}
+            placeholder="100000"
           />
         </div>
       </div>
+
+      <Button variant="outline" onClick={onReset} className="w-full">
+        Réinitialiser
+      </Button>
     </div>
   );
 }
-
-export default FilterSidebar;

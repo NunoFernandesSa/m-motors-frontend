@@ -63,7 +63,12 @@ export interface Filters {
 }
 export interface FilterSidebarProps {
   filters: Filters;
-  onFilterChange: (key: keyof Filters, value: string) => void;
+  onVehicleTypeChange: (value: string) => void;
+  onBrandChange: (value: string) => void;
+  onModelChange: (value: string) => void;
+  onMinPriceChange: (value: string) => void;
+  onMaxPriceChange: (value: string) => void;
+  onReset: () => void; // ← ajouté
 }
 
 /**
@@ -73,4 +78,12 @@ export interface FilterSidebarProps {
 export interface ErrorMessageProps {
   message: string;
   onRetry?: () => void;
+}
+
+/**
+ * ----- Vehicle Card Component -----
+ * Interface représents a vehicle card component
+ */
+export interface VehicleCardProps {
+  vehicle: Vehicle;
 }

@@ -6,21 +6,19 @@
  * @Copyright (c) 2026 m-motors. All rights reserved.
  */
 
-// ----- React & Next.js -----
 import { useRouter, useSearchParams } from "next/navigation";
-import { JSX, useCallback, useEffect } from "react";
-// ----- Shadcn UI -----
+import { JSX, useCallback, useEffect, useState } from "react";
 import { Skeleton } from "../ui/skeleton";
 import { Button } from "../ui/button";
-// ----- Components -----
 import VehicleCard from "./VehicleCard";
 import FilterSidebar from "./FilterSidebar";
 import { ErrorMessage } from "@components/shared/ErrorMessage";
-// ----- Store -----
 import { useVehicleStore } from "@/store/vehicleStore";
+import { useDebounce } from "@/hooks/useDebounce";
+import { Filters } from "@/types";
 
 /**
- * VehicleList component that displays a list of vehicles with filters and pagination
+ * VehicleList component that displays a list of vehicles
  * @returns {JSX.Element} The rendered VehicleList component
  */
 const VehicleList = (): JSX.Element => {
@@ -38,39 +36,98 @@ const VehicleList = (): JSX.Element => {
     loadMore,
   } = useVehicleStore();
 
+  // local state for filters (debounced)
+  const [localFilters, setLocalFilters] = useState({
+    brand: filters.brand,
+    model: filters.model,
+    min_price: filters.min_price,
+    max_price: filters.max_price,
+  });
+
+  // Debounce
+  const debouncedBrand = useDebounce(localFilters.brand, 500);
+  const debouncedModel = useDebounce(localFilters.model, 500);
+  const debouncedMinPrice = useDebounce(localFilters.min_price, 500);
+  const debouncedMaxPrice = useDebounce(localFilters.max_price, 500);
+
+  // Initialize filters from URL params (once)
   useEffect(() => {
-    const urlFilters = {
-      offer_type: searchParams.get("vehicle_type") || "sale",
+    const urlFilters: Filters = {
+      vehicle_type: searchParams.get("vehicle_type") || "sale",
       brand: searchParams.get("brand") || "",
       model: searchParams.get("model") || "",
       min_price: searchParams.get("min_price") || "",
       max_price: searchParams.get("max_price") || "",
     };
-
-    // if filters have changed, fetch vehicles
-    if (JSON.stringify(urlFilters) !== JSON.stringify(filters)) {
-      setFilters(urlFilters);
-    } else if (vehicles.length === 0 && !loading) {
-      fetchVehicles(true);
-    }
+    setFilters(urlFilters);
+    setLocalFilters({
+      brand: urlFilters.brand,
+      model: urlFilters.model,
+      min_price: urlFilters.min_price,
+      max_price: urlFilters.max_price,
+    });
   }, []);
 
-  const handleFilterChange = useCallback(
-    (key: string, value: string) => {
+  // Update store when debounced values change
+  useEffect(() => {
+    const newFilters: Partial<Filters> = {};
+    if (debouncedBrand !== filters.brand) newFilters.brand = debouncedBrand;
+    if (debouncedModel !== filters.model) newFilters.model = debouncedModel;
+    if (debouncedMinPrice !== filters.min_price)
+      newFilters.min_price = debouncedMinPrice;
+    if (debouncedMaxPrice !== filters.max_price)
+      newFilters.max_price = debouncedMaxPrice;
+
+    if (Object.keys(newFilters).length > 0) {
+      setFilters(newFilters);
+    }
+  }, [
+    debouncedBrand,
+    debouncedModel,
+    debouncedMinPrice,
+    debouncedMaxPrice,
+    filters,
+    setFilters,
+  ]);
+
+  // Handle vehicle type change (update URL and store)
+  const handleVehicleTypeChange = useCallback(
+    (value: string) => {
       const params = new URLSearchParams(searchParams);
-      if (value) params.set(key, value);
-      else params.delete(key);
+      params.set("vehicle_type", value);
       router.push(`/vehicules?${params.toString()}`);
-      setFilters({ [key]: value });
+      setFilters({ vehicle_type: value });
     },
     [router, searchParams, setFilters],
   );
 
-  // manage load more vehicles
-  const handleLoadMore = () => {
-    loadMore();
+  // Handle filter changes (local immediate update)
+  const handleBrandChange = (value: string) =>
+    setLocalFilters((prev) => ({ ...prev, brand: value }));
+  const handleModelChange = (value: string) =>
+    setLocalFilters((prev) => ({ ...prev, model: value }));
+  const handleMinPriceChange = (value: string) =>
+    setLocalFilters((prev) => ({ ...prev, min_price: value }));
+  const handleMaxPriceChange = (value: string) =>
+    setLocalFilters((prev) => ({ ...prev, max_price: value }));
+
+  // Reset filters (update URL and store)
+  const handleResetFilters = () => {
+    setLocalFilters({ brand: "", model: "", min_price: "", max_price: "" });
+    setFilters({
+      vehicle_type: "sale",
+      brand: "",
+      model: "",
+      min_price: "",
+      max_price: "",
+    });
+    router.push("/vehicules?vehicle_type=sale");
   };
 
+  // Load more vehicles (update store)
+  const handleLoadMore = () => loadMore();
+
+  // Handle loading state
   if (loading && vehicles.length === 0) {
     return (
       <div className="flex flex-col md:flex-row gap-8">
@@ -90,11 +147,12 @@ const VehicleList = (): JSX.Element => {
     );
   }
 
+  // Handle error state
   if (error) {
     return (
       <ErrorMessage
-        message={"Une erreur est survenue"}
-        onRetry={fetchVehicles}
+        message="Une erreur est survenue"
+        onRetry={() => fetchVehicles(true)}
       />
     );
   }
@@ -102,7 +160,21 @@ const VehicleList = (): JSX.Element => {
   return (
     <div className="flex flex-col md:flex-row gap-8">
       <aside className="w-full md:w-64">
-        <FilterSidebar filters={filters} onFilterChange={handleFilterChange} />
+        <FilterSidebar
+          filters={{
+            vehicle_type: filters.vehicle_type,
+            brand: localFilters.brand,
+            model: localFilters.model,
+            min_price: localFilters.min_price,
+            max_price: localFilters.max_price,
+          }}
+          onVehicleTypeChange={handleVehicleTypeChange}
+          onBrandChange={handleBrandChange}
+          onModelChange={handleModelChange}
+          onMinPriceChange={handleMinPriceChange}
+          onMaxPriceChange={handleMaxPriceChange}
+          onReset={handleResetFilters}
+        />
       </aside>
       <main className="flex-1">
         <p className="text-sm text-muted-foreground mb-4">

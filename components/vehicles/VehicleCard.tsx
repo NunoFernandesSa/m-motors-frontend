@@ -4,23 +4,25 @@
  * @Copyright (c) 2026 m-motors. All rights reserved.
  */
 
-// ----- React & Next.js -----
 import Image from "next/image";
 import Link from "next/link";
-// ----- Shadcn UI -----
+import { JSX } from "react";
 import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 import { Badge } from "../ui/badge";
-// ----- Types -----
 import { Vehicle } from "@/types";
-import { JSX } from "react";
+
+interface VehicleCardProps {
+  vehicle: Vehicle;
+}
 
 /**
- * VehicleCard component that displays a vehicle information card
- * @param {Object} props - The component props
- * @param {Vehicle} props.vehicle - The vehicle object to display
+ * VehicleCard component that displays a vehicle card
+ * @param vehicle The vehicle to display
  * @returns {JSX.Element} The rendered VehicleCard component
  */
-function VehicleCard({ vehicle }: { vehicle: Vehicle }): JSX.Element {
+export default function VehicleCard({
+  vehicle,
+}: VehicleCardProps): JSX.Element {
   const displayPrice =
     vehicle.vehicle_type === "sale"
       ? `${parseInt(vehicle.sale_price || "0").toLocaleString()} €`
@@ -38,6 +40,7 @@ function VehicleCard({ vehicle }: { vehicle: Vehicle }): JSX.Element {
             alt={`${vehicle.brand} ${vehicle.model}`}
             fill
             className="object-cover"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         </div>
         <CardHeader className="p-4 pb-0">
@@ -65,5 +68,3 @@ function VehicleCard({ vehicle }: { vehicle: Vehicle }): JSX.Element {
     </Link>
   );
 }
-
-export default VehicleCard;
