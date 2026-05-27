@@ -1,6 +1,6 @@
 /**
  * @license: MIT
- * @author: nunofernandes-dev
+ * @author: nuno fernandes
  * @Copyright (c) 2026 m-motors. All rights reserved.
  * @description: This file contains the Logo component for the M-Motors application.
  */
