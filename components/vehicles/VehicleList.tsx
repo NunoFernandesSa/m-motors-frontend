@@ -40,9 +40,9 @@ const VehicleList = (): JSX.Element => {
 
   useEffect(() => {
     const urlFilters = {
-      offer_type: searchParams.get("offer_type") || "",
+      offer_type: searchParams.get("vehicle_type") || "sale",
       brand: searchParams.get("brand") || "",
-      search: searchParams.get("search") || "",
+      model: searchParams.get("model") || "",
       min_price: searchParams.get("min_price") || "",
       max_price: searchParams.get("max_price") || "",
     };

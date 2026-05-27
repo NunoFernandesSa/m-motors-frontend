@@ -8,7 +8,7 @@ export const useVehicleStore = create<VehicleState>()((set, get) => ({
   loading: false,
   error: null,
   filters: {
-    vehicle_type: "",
+    vehicle_type: "sale",
     brand: "",
     model: "",
     min_price: "",
@@ -32,7 +32,7 @@ export const useVehicleStore = create<VehicleState>()((set, get) => ({
   resetFilters: () => {
     set({
       filters: {
-        vehicle_type: "",
+        vehicle_type: "sale",
         brand: "",
         model: "",
         min_price: "",
