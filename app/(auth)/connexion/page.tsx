@@ -19,15 +19,23 @@ import { LoginFormValues, loginSchema } from "@/zod";
 import { useEffect } from "react";
 
 export default function LoginPage() {
-  const { login, isLoading, error, isAuthenticated } = useAuthStore();
+  const { login, isLoading, error, isAuthenticated, user } = useAuthStore();
   const router = useRouter();
 
-  // redirect to dashboard if already authenticated
   useEffect(() => {
-    if (isAuthenticated) {
-      router.push("/dashboard");
+    console.log("isAuthenticated:", isAuthenticated, "user:", user);
+    if (isAuthenticated && user) {
+      console.log("Rôle détecté:", user.role);
+      // Redirect based on role
+      if (user.role === "admin" || user.role === "commercial") {
+        console.log("Redirection vers backoffice");
+        router.push("/backoffice");
+      } else {
+        console.log("Redirection vers dashboard");
+        router.push("/dashboard");
+      }
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, user, router]);
 
   const {
     register,
@@ -43,10 +51,7 @@ export default function LoginPage() {
 
   const onSubmit = async (data: LoginFormValues) => {
     await login(data.username, data.password);
-    if (useAuthStore.getState().isAuthenticated) {
-      router.push("/dashboard");
-      console.info("----- connexion réussi -----");
-    }
+    console.info("----- connexion réussi -----");
   };
 
   return (
