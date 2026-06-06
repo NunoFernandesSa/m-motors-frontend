@@ -17,7 +17,7 @@ import {
 } from "../ui/select";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { FilterSidebarProps } from "@/types";
+import { FilterBarProps } from "@/types";
 import { Card } from "../ui/card";
 
 export default function FilterBar({
@@ -28,11 +28,11 @@ export default function FilterBar({
   onMinPriceChange,
   onMaxPriceChange,
   onReset,
-}: FilterSidebarProps): JSX.Element {
+}: FilterBarProps): JSX.Element {
   return (
     <Card className="p-4">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:flex-wrap">
-        <div className="min-w-[180px] flex-1">
+        <div className="min-w-45 flex-1">
           <Label htmlFor="vehicle_type">Type d&apos;offre</Label>
           <Select
             value={filters.vehicle_type}
@@ -48,7 +48,7 @@ export default function FilterBar({
           </Select>
         </div>
 
-        <div className="min-w-[180px] flex-1">
+        <div className="min-w-45 flex-1">
           <Label htmlFor="brand">Marque</Label>
           <Input
             id="brand"
@@ -58,7 +58,7 @@ export default function FilterBar({
           />
         </div>
 
-        <div className="min-w-[180px] flex-1">
+        <div className="min-w-45 flex-1">
           <Label htmlFor="model">Modèle</Label>
           <Input
             id="model"
@@ -68,7 +68,7 @@ export default function FilterBar({
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4 min-w-[260px]">
+        <div className="grid grid-cols-2 gap-4 min-w-65">
           <div>
             <Label htmlFor="min_price">Prix min (€)</Label>
             <Input

@@ -2,18 +2,20 @@ import { VehicleState } from "@/types";
 import { create } from "zustand";
 import { API_URL } from "@/constants/api";
 
+const initialFilters = {
+  vehicle_type: "sale",
+  brand: "",
+  model: "",
+  min_price: "",
+  max_price: "",
+};
+
 export const useVehicleStore = create<VehicleState>()((set, get) => ({
   vehicles: [],
   totalCount: 0,
   loading: false,
   error: null,
-  filters: {
-    vehicle_type: "sale",
-    brand: "",
-    model: "",
-    min_price: "",
-    max_price: "",
-  },
+  filters: initialFilters,
   page: 1,
   pageSize: 12, // fetch 12 vehicles at a time
   hasMore: true,
@@ -25,36 +27,26 @@ export const useVehicleStore = create<VehicleState>()((set, get) => ({
       vehicles: [], // clear vehicles list
       hasMore: true,
     }));
-    // Trigger a new fetch when filters change
-    get().fetchVehicles(true);
   },
 
   resetFilters: () => {
     set({
-      filters: {
-        vehicle_type: "sale",
-        brand: "",
-        model: "",
-        min_price: "",
-        max_price: "",
-      },
+      filters: initialFilters,
       page: 1,
       vehicles: [],
+      totalCount: 0,
       hasMore: true,
     });
-    get().fetchVehicles(true);
   },
 
   fetchVehicles: async (reset = true) => {
-    const { filters, page, pageSize } = get();
-    if (reset) {
-      set({ loading: true, error: null, vehicles: [], page: 1, hasMore: true });
-    } else {
-      set({ loading: true, error: null });
-    }
+    const state = get();
+    const pageToUse = reset ? 1 : state.page;
+    const { filters, pageSize } = state;
+
+    set({ loading: true, error: null });
 
     try {
-      // Build request parameters
       const params = new URLSearchParams();
       if (filters.vehicle_type)
         params.append("vehicle_type", filters.vehicle_type);
@@ -62,23 +54,22 @@ export const useVehicleStore = create<VehicleState>()((set, get) => ({
       if (filters.model) params.append("model", filters.model);
       if (filters.min_price) params.append("min_price", filters.min_price);
       if (filters.max_price) params.append("max_price", filters.max_price);
-      params.append("page", page.toString());
+      params.append("page", pageToUse.toString());
       params.append("page_size", pageSize.toString());
 
-      const response = await fetch(`${API_URL}/vehicles/?${params}`);
+      const response = await fetch(`${API_URL}/vehicles/?${params.toString()}`);
       if (!response.ok) throw new Error("Erreur de chargement");
 
       const data = await response.json();
-
-      // Handle pagination data from API
       const newVehicles = data.results || data;
       const total = data.count || newVehicles.length;
 
       set((state) => ({
         vehicles: reset ? newVehicles : [...state.vehicles, ...newVehicles],
         totalCount: total,
-        hasMore: !!data.next, // if API provides a next URL, there are more vehicles
+        hasMore: !!data.next,
         loading: false,
+        page: pageToUse,
       }));
     } catch (error) {
       set({ error: (error as Error).message, loading: false });

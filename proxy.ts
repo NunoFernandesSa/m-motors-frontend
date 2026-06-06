@@ -6,9 +6,17 @@ export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Define the routes accessible without a connection (vehicle catalog).
-  const publicPaths = ["/", "/vehicules", "/connexion", "/inscription"];
+  const publicPaths = [
+    "/",
+    "/vehicule",
+    "/connexion",
+    "/inscription",
+    "/vehicule/achat",
+    "/vehicule/location",
+  ];
+
   const isPublic =
-    publicPaths.includes(pathname) || pathname.startsWith("/vehicules/");
+    publicPaths.includes(pathname) || pathname.startsWith("/vehicule/");
 
   // Define the protected area (protected).
   const isBackoffice = pathname.startsWith("/backoffice");

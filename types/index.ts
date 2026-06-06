@@ -61,7 +61,7 @@ export interface Filters {
   min_price: string;
   max_price: string;
 }
-export interface FilterSidebarProps {
+export interface FilterBarProps {
   filters: Filters;
   onVehicleTypeChange: (value: string) => void;
   onBrandChange: (value: string) => void;

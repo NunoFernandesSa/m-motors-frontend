@@ -13,7 +13,7 @@ const CataloguePage = () => {
       <h1 className="text-3xl font-bold mb-6">Catalogue de véhicules</h1>
 
       <Suspense fallback={<div>Chargement du catalogue...</div>}>
-        <VehicleList />
+        {/* <VehicleList /> */}
       </Suspense>
     </div>
   );
