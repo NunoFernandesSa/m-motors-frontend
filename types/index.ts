@@ -44,6 +44,7 @@ export interface VehicleState {
   pageSize: number;
   hasMore: boolean;
   vehicleDetail: Vehicle | null;
+  fetchVehicleDetail: (id: string) => Promise<void>;
   setFilters: (filters: Partial<Filters>) => void;
   resetFilters: () => void;
   fetchVehicles: (reset?: boolean) => Promise<void>;

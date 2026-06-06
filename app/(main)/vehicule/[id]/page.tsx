@@ -5,6 +5,8 @@ import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { useVehicleStore } from "@/store/vehicleStore";
+import { getValidImageUrl } from "@/lib/utils";
+import { Loading } from "@/components/shared/Loading";
 
 export default function VehicleDetailPage() {
   const { id } = useParams();
@@ -16,15 +18,7 @@ export default function VehicleDetailPage() {
   }, [id, fetchVehicleDetail]);
 
   if (loading) {
-    return (
-      <div className="container mx-auto p-4 md:p-6">
-        <div className="animate-pulse">
-          <div className="h-96 bg-muted rounded-lg mb-4"></div>
-          <div className="h-8 bg-muted rounded w-1/2 mb-2"></div>
-          <div className="h-4 bg-muted rounded w-1/3"></div>
-        </div>
-      </div>
-    );
+    return <Loading variant="dots" text="Chargement..." />;
   }
 
   if (error) {
@@ -64,7 +58,8 @@ export default function VehicleDetailPage() {
 
   const offerLabel =
     vehicleDetail.vehicle_type === "sale" ? "Achat" : "Location LLD";
-  const imageUrl = vehicleDetail.images || "/images/placeholder-car.jpg";
+
+  const imageUrl = getValidImageUrl(vehicleDetail.images?.[0]);
 
   return (
     <div className="container mx-auto p-4 md:p-6">
@@ -134,26 +129,6 @@ export default function VehicleDetailPage() {
       </div>
 
       {/* Galerie (si disponible) */}
-      {vehicleDetail.images && vehicleDetail.images.length > 0 && (
-        <div className="mt-12">
-          <h2 className="text-xl font-semibold mb-4">Galerie photos</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {vehicleDetail.images.map((img: string, idx: number) => (
-              <div
-                key={idx}
-                className="relative h-32 w-full bg-muted rounded-md overflow-hidden"
-              >
-                <Image
-                  src={img}
-                  alt={`${vehicleDetail.brand} ${vehicleDetail.model} - vue ${idx + 1}`}
-                  fill
-                  className="object-cover"
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
