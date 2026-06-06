@@ -6,7 +6,7 @@ interface User {
   email: string;
   username: string;
   password: string;
-  password_confirm: string;
+  password2: string;
 }
 
 interface AuthState {
@@ -17,8 +17,9 @@ interface AuthState {
   login: (email: string, password: string) => Promise<void>;
   register: (
     email: string,
-    password: string,
     username: string,
+    password: string,
+    password2: string,
   ) => Promise<void>;
   logout: () => Promise<void>;
   fetchUser: () => Promise<void>;
@@ -52,7 +53,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
   },
 
-  register: async (email, password, username) => {
+  register: async (email, password, username, password2) => {
     set({ isLoading: true, error: null });
     try {
       const response = await fetch(`${API_URL}/auth/register/`, {
