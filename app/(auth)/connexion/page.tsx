@@ -16,10 +16,18 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { LoginFormValues, loginSchema } from "@/zod";
+import { useEffect } from "react";
 
 export default function LoginPage() {
-  const { login, isLoading, error } = useAuthStore();
+  const { login, isLoading, error, isAuthenticated } = useAuthStore();
   const router = useRouter();
+
+  // redirect to dashboard if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push("/dashboard");
+    }
+  }, [isAuthenticated, router]);
 
   const {
     register,
@@ -37,6 +45,7 @@ export default function LoginPage() {
     await login(data.username, data.password);
     if (useAuthStore.getState().isAuthenticated) {
       router.push("/dashboard");
+      console.info("----- connexion réussi -----");
     }
   };
 

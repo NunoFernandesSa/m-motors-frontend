@@ -1,29 +1,6 @@
 import { create } from "zustand";
 import { API_URL } from "@/constants/api";
-
-interface User {
-  id: number;
-  email: string;
-  username: string;
-  password: string;
-  password2: string;
-}
-
-interface AuthState {
-  user: User | null;
-  isLoading: boolean;
-  error: string | null;
-  isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  register: (
-    email: string,
-    username: string,
-    password: string,
-    password2: string,
-  ) => Promise<void>;
-  logout: () => Promise<void>;
-  fetchUser: () => Promise<void>;
-}
+import { AuthState } from "@/types";
 
 export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
@@ -31,21 +8,19 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   error: null,
   isAuthenticated: false,
 
-  login: async (email, password) => {
+  login: async (username, password) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await fetch(`${API_URL}/auth/login/`, {
+      const response = await fetch(`${API_URL}/login/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-        credentials: "include",
+        body: JSON.stringify({ username, password }),
+        credentials: "include", // ← crucial
       });
-
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.detail || "La connexion a échoué.");
+        throw new Error(errorData.detail || "Identifiants invalides");
       }
-
       await get().fetchUser();
       set({ isAuthenticated: true, isLoading: false });
     } catch (error) {
@@ -53,47 +28,40 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
   },
 
-  register: async (email, password, username, password2) => {
+  register: async (username, email, password, password2) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await fetch(`${API_URL}/auth/register/`, {
+      const response = await fetch(`${API_URL}/register/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, username }),
+        body: JSON.stringify({ username, email, password, password2 }),
+        credentials: "include",
       });
-
+      const data = await response.json();
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || "L'inscription a échoué.");
+        let errorMsg = "L'inscription a échoué";
+        if (typeof data === "object") {
+          if (data.username) errorMsg = data.username.join(", ");
+          else if (data.email) errorMsg = data.email.join(", ");
+          else if (data.password) errorMsg = data.password.join(", ");
+          else if (data.non_field_errors)
+            errorMsg = data.non_field_errors.join(", ");
+          else if (data.detail) errorMsg = data.detail;
+        }
+        throw new Error(errorMsg);
       }
-
-      // Connect the user after registration automatically
-      await get().login(email, password);
+      await get().fetchUser();
+      set({ isAuthenticated: true, isLoading: false });
     } catch (error) {
       set({ error: (error as Error).message, isLoading: false });
     }
   },
 
-  logout: async () => {
-    set({ isLoading: true });
-    try {
-      await fetch(`${API_URL}/auth/logout/`, {
-        method: "POST",
-        credentials: "include",
-      });
-    } catch (error) {
-      console.error("Logout error:", error);
-    } finally {
-      set({ user: null, isAuthenticated: false, isLoading: false });
-    }
-  },
-
   fetchUser: async () => {
     try {
-      const response = await fetch(`${API_URL}/auth/me/`, {
+      const response = await fetch(`${API_URL}/me/`, {
         credentials: "include",
       });
-
       if (response.ok) {
         const userData = await response.json();
         set({ user: userData, isAuthenticated: true });
@@ -102,6 +70,20 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       }
     } catch (error) {
       set({ user: null, isAuthenticated: false });
+    }
+  },
+
+  logout: async () => {
+    set({ isLoading: true });
+    try {
+      await fetch(`${API_URL}/logout/`, {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      set({ user: null, isAuthenticated: false, isLoading: false });
     }
   },
 }));

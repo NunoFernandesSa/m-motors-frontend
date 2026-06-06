@@ -91,3 +91,33 @@ export interface ErrorMessageProps {
 export interface VehicleCardProps {
   vehicle: Vehicle;
 }
+
+/**
+ * ----- User Interface -----
+ */
+export interface User {
+  id: number;
+  email: string;
+  username: string;
+  role: "admin" | "commercial" | "user";
+}
+
+/**
+ * ----- Auth State Interface -----
+ * Interface représents a auth state
+ */
+export interface AuthState {
+  user: User | null;
+  isLoading: boolean;
+  error: string | null;
+  isAuthenticated: boolean;
+  login: (username: string, password: string) => Promise<void>;
+  register: (
+    username: string,
+    email: string,
+    password: string,
+    password2: string,
+  ) => Promise<void>;
+  logout: () => Promise<void>;
+  fetchUser: () => Promise<void>;
+}
