@@ -11,7 +11,7 @@ import { JSX, useCallback, useEffect, useState } from "react";
 import { Skeleton } from "../ui/skeleton";
 import { Button } from "../ui/button";
 import VehicleCard from "./VehicleCard";
-import FilterSidebar from "./FilterSidebar";
+import FilterSidebar from "./FilterBar";
 import { ErrorMessage } from "@components/shared/ErrorMessage";
 import { useVehicleStore } from "@/store/vehicleStore";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -36,7 +36,6 @@ const VehicleList = (): JSX.Element => {
     loadMore,
   } = useVehicleStore();
 
-  // local state for filters (debounced)
   const [localFilters, setLocalFilters] = useState({
     brand: filters.brand,
     model: filters.model,
@@ -44,13 +43,11 @@ const VehicleList = (): JSX.Element => {
     max_price: filters.max_price,
   });
 
-  // Debounce
   const debouncedBrand = useDebounce(localFilters.brand, 500);
   const debouncedModel = useDebounce(localFilters.model, 500);
   const debouncedMinPrice = useDebounce(localFilters.min_price, 500);
   const debouncedMaxPrice = useDebounce(localFilters.max_price, 500);
 
-  // Initialize filters from URL params (once)
   useEffect(() => {
     const urlFilters: Filters = {
       vehicle_type: searchParams.get("vehicle_type") || "sale",
@@ -59,6 +56,7 @@ const VehicleList = (): JSX.Element => {
       min_price: searchParams.get("min_price") || "",
       max_price: searchParams.get("max_price") || "",
     };
+
     setFilters(urlFilters);
     setLocalFilters({
       brand: urlFilters.brand,
@@ -68,7 +66,6 @@ const VehicleList = (): JSX.Element => {
     });
   }, []);
 
-  // Update store when debounced values change
   useEffect(() => {
     const newFilters: Partial<Filters> = {};
     if (debouncedBrand !== filters.brand) newFilters.brand = debouncedBrand;
@@ -90,7 +87,6 @@ const VehicleList = (): JSX.Element => {
     setFilters,
   ]);
 
-  // Handle vehicle type change (update URL and store)
   const handleVehicleTypeChange = useCallback(
     (value: string) => {
       const params = new URLSearchParams(searchParams);
@@ -101,17 +97,18 @@ const VehicleList = (): JSX.Element => {
     [router, searchParams, setFilters],
   );
 
-  // Handle filter changes (local immediate update)
   const handleBrandChange = (value: string) =>
     setLocalFilters((prev) => ({ ...prev, brand: value }));
+
   const handleModelChange = (value: string) =>
     setLocalFilters((prev) => ({ ...prev, model: value }));
+
   const handleMinPriceChange = (value: string) =>
     setLocalFilters((prev) => ({ ...prev, min_price: value }));
+
   const handleMaxPriceChange = (value: string) =>
     setLocalFilters((prev) => ({ ...prev, max_price: value }));
 
-  // Reset filters (update URL and store)
   const handleResetFilters = () => {
     setLocalFilters({ brand: "", model: "", min_price: "", max_price: "" });
     setFilters({
@@ -124,30 +121,21 @@ const VehicleList = (): JSX.Element => {
     router.push("/vehicules?vehicle_type=sale");
   };
 
-  // Load more vehicles (update store)
   const handleLoadMore = () => loadMore();
 
-  // Handle loading state
   if (loading && vehicles.length === 0) {
     return (
-      <div className="flex flex-col md:flex-row gap-8">
-        <aside className="w-full md:w-64 space-y-4">
-          <Skeleton className="h-10 w-full" />
-          <Skeleton className="h-10 w-full" />
-          <Skeleton className="h-10 w-full" />
-        </aside>
-        <main className="flex-1">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[...Array(6)].map((_, i) => (
-              <Skeleton key={i} className="h-80 w-full rounded-xl" />
-            ))}
-          </div>
-        </main>
+      <div className="space-y-6">
+        <Skeleton className="h-24 w-full" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(6)].map((_, i) => (
+            <Skeleton key={i} className="h-80 w-full rounded-xl" />
+          ))}
+        </div>
       </div>
     );
   }
 
-  // Handle error state
   if (error) {
     return (
       <ErrorMessage
@@ -158,28 +146,28 @@ const VehicleList = (): JSX.Element => {
   }
 
   return (
-    <div className="flex flex-col md:flex-row gap-8">
-      <aside className="w-full md:w-64">
-        <FilterSidebar
-          filters={{
-            vehicle_type: filters.vehicle_type,
-            brand: localFilters.brand,
-            model: localFilters.model,
-            min_price: localFilters.min_price,
-            max_price: localFilters.max_price,
-          }}
-          onVehicleTypeChange={handleVehicleTypeChange}
-          onBrandChange={handleBrandChange}
-          onModelChange={handleModelChange}
-          onMinPriceChange={handleMinPriceChange}
-          onMaxPriceChange={handleMaxPriceChange}
-          onReset={handleResetFilters}
-        />
-      </aside>
+    <div className="space-y-6">
+      <FilterSidebar
+        filters={{
+          vehicle_type: filters.vehicle_type,
+          brand: localFilters.brand,
+          model: localFilters.model,
+          min_price: localFilters.min_price,
+          max_price: localFilters.max_price,
+        }}
+        onVehicleTypeChange={handleVehicleTypeChange}
+        onBrandChange={handleBrandChange}
+        onModelChange={handleModelChange}
+        onMinPriceChange={handleMinPriceChange}
+        onMaxPriceChange={handleMaxPriceChange}
+        onReset={handleResetFilters}
+      />
+
       <main className="flex-1">
         <p className="text-sm text-muted-foreground mb-4">
           {totalCount} véhicule(s) trouvé(s)
         </p>
+
         {vehicles.length === 0 ? (
           <div className="text-center py-20">
             <p className="text-muted-foreground">
@@ -193,6 +181,7 @@ const VehicleList = (): JSX.Element => {
                 <VehicleCard key={vehicle.id} vehicle={vehicle} />
               ))}
             </div>
+
             {hasMore && (
               <div className="flex justify-center mt-8">
                 <Button onClick={handleLoadMore} disabled={loading}>

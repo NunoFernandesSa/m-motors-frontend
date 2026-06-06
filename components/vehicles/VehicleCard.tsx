@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * @license: MIT
  * @author: nuno fernandes
@@ -32,7 +34,7 @@ export default function VehicleCard({
   const imageUrl = vehicle.images || "/images/placeholder-car.jpg";
 
   return (
-    <Link href={`/vehicules/${vehicle.id}`}>
+    <Link href={`/vehicule/${vehicle.id}`}>
       <Card className="h-full overflow-hidden hover:shadow-lg transition-shadow">
         <div className="relative h-48 w-full bg-muted">
           <Image
@@ -43,6 +45,7 @@ export default function VehicleCard({
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         </div>
+
         <CardHeader className="p-4 pb-0">
           <h3 className="text-lg font-bold">
             {vehicle.brand} {vehicle.model}
@@ -51,12 +54,14 @@ export default function VehicleCard({
             <p className="text-sm text-muted-foreground">{vehicle.year}</p>
           )}
         </CardHeader>
+
         <CardContent className="p-4 pt-2">
           <p className="text-2xl font-bold text-primary">{displayPrice}</p>
           {vehicle.mileage && (
             <p className="text-sm">{vehicle.mileage.toLocaleString()} km</p>
           )}
         </CardContent>
+
         <CardFooter className="p-4 pt-0">
           <Badge
             variant={vehicle.vehicle_type === "sale" ? "default" : "secondary"}
