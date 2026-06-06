@@ -1,4 +1,4 @@
-import { VehicleState } from "@/types";
+import { Vehicle, VehicleState } from "@/types";
 import { create } from "zustand";
 import { API_URL } from "@/constants/api";
 
@@ -19,6 +19,7 @@ export const useVehicleStore = create<VehicleState>()((set, get) => ({
   page: 1,
   pageSize: 12, // fetch 12 vehicles at a time
   hasMore: true,
+  vehicleDetail: null as Vehicle | null,
 
   setFilters: (newFilters) => {
     set((state) => ({
@@ -96,6 +97,18 @@ export const useVehicleStore = create<VehicleState>()((set, get) => ({
       totalCount: 0,
       error: null,
     });
+  },
+
+  fetchVehicleDetail: async (id: string) => {
+    set({ loading: true, error: null, vehicleDetail: null });
+    try {
+      const response = await fetch(`${API_URL}/vehicles/${id}/`);
+      if (!response.ok) throw new Error("Véhicule non trouvé");
+      const data = await response.json();
+      set({ vehicleDetail: data, loading: false });
+    } catch (error) {
+      set({ error: (error as Error).message, loading: false });
+    }
   },
 
   // TODO: Add vehicle detail state

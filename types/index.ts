@@ -24,7 +24,7 @@ export interface Vehicle {
   transmission: string;
   color: string;
   description: string;
-  images?: string;
+  images?: string[];
   vehicle_type: "sale" | "rent";
   sale_price?: string;
   rent_price?: string;
@@ -43,6 +43,7 @@ export interface VehicleState {
   page: number;
   pageSize: number;
   hasMore: boolean;
+  vehicleDetail: Vehicle | null;
   setFilters: (filters: Partial<Filters>) => void;
   resetFilters: () => void;
   fetchVehicles: (reset?: boolean) => Promise<void>;
