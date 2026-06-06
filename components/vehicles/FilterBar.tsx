@@ -28,25 +28,28 @@ export default function FilterBar({
   onMinPriceChange,
   onMaxPriceChange,
   onReset,
+  hideVehicleType = true,
 }: FilterBarProps): JSX.Element {
   return (
     <Card className="p-4">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:flex-wrap">
-        <div className="min-w-45 flex-1">
-          <Label htmlFor="vehicle_type">Type d&apos;offre</Label>
-          <Select
-            value={filters.vehicle_type}
-            onValueChange={onVehicleTypeChange}
-          >
-            <SelectTrigger id="vehicle_type">
-              <SelectValue placeholder="Type d'offre" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="sale">Achat</SelectItem>
-              <SelectItem value="rent">Location LLD</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        {!hideVehicleType && (
+          <div className="min-w-45 flex-1">
+            <Label htmlFor="vehicle_type">Type d&apos;offre</Label>
+            <Select
+              value={filters.vehicle_type}
+              onValueChange={onVehicleTypeChange}
+            >
+              <SelectTrigger id="vehicle_type">
+                <SelectValue placeholder="Type d'offre" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="sale">Achat</SelectItem>
+                <SelectItem value="rent">Location LLD</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        )}
 
         <div className="min-w-45 flex-1">
           <Label htmlFor="brand">Marque</Label>

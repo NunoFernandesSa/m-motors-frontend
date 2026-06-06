@@ -87,6 +87,17 @@ export const useVehicleStore = create<VehicleState>()((set, get) => ({
     set({ vehicles: [], totalCount: 0, page: 1, hasMore: true });
   },
 
+  resetToType: (type: string) => {
+    set({
+      filters: { ...initialFilters, vehicle_type: type },
+      page: 1,
+      vehicles: [],
+      hasMore: true,
+      totalCount: 0,
+      error: null,
+    });
+  },
+
   // TODO: Add vehicle detail state
   // fetchVehicleDetail: async (id: number) => {
   //   const response = await fetch(`${API_URL}/vehicles/${id}/`);

@@ -48,6 +48,7 @@ export interface VehicleState {
   fetchVehicles: (reset?: boolean) => Promise<void>;
   loadMore: () => Promise<void>;
   clearVehicles: () => void;
+  resetToType: (type: string) => void;
 }
 
 /**
@@ -68,7 +69,8 @@ export interface FilterBarProps {
   onModelChange: (value: string) => void;
   onMinPriceChange: (value: string) => void;
   onMaxPriceChange: (value: string) => void;
-  onReset: () => void; // ← ajouté
+  onReset: () => void;
+  hideVehicleType?: boolean;
 }
 
 /**
