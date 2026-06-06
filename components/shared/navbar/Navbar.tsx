@@ -3,13 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import useAuthStore from "@/store/authStore";
+
 import Image from "next/image";
 import { User, LogOut, Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { NAV_LINKS } from "@/constants/navlinks";
 import MobileMenuButton from "./MobileMenuButton";
 import Logo from "./Logo";
+import { useAuthStore } from "@/store/authStore";
 
 function Navbar() {
   const pathname = usePathname();
