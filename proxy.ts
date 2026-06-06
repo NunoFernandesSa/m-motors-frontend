@@ -13,9 +13,6 @@ export function proxy(request: NextRequest) {
     "/inscription",
     "/vehicule/achat",
     "/vehicule/location",
-    "/api/auth/login",
-    "/api/auth/register",
-    "/api/auth/me",
   ];
 
   const isPublic =
@@ -29,7 +26,7 @@ export function proxy(request: NextRequest) {
 
   // Redirect to the login page if the route is protected and there is no token.
   if ((isProtected || isBackoffice) && !token) {
-    return NextResponse.redirect(new URL("/connexion", request.url));
+    // return NextResponse.redirect(new URL("/connexion", request.url));
   }
 
   // Allow the request to continue normally.
