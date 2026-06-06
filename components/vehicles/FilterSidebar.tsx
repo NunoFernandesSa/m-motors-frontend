@@ -19,6 +19,7 @@ import { Separator } from "../ui/separator";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { FilterSidebarProps } from "@/types";
+import { Card } from "../ui/card";
 
 export default function FilterSidebar({
   filters,
@@ -30,7 +31,7 @@ export default function FilterSidebar({
   onReset,
 }: FilterSidebarProps): JSX.Element {
   return (
-    <div className="space-y-6">
+    <Card className="space-y-6 p-3">
       <div>
         <Label htmlFor="vehicle_type">Type d&apos;offre</Label>
         <Select
@@ -97,6 +98,6 @@ export default function FilterSidebar({
       <Button variant="outline" onClick={onReset} className="w-full">
         Réinitialiser
       </Button>
-    </div>
+    </Card>
   );
 }
