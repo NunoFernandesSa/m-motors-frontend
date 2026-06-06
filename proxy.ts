@@ -13,6 +13,9 @@ export function proxy(request: NextRequest) {
     "/inscription",
     "/vehicule/achat",
     "/vehicule/location",
+    "/api/auth/login",
+    "/api/auth/register",
+    "/api/auth/me",
   ];
 
   const isPublic =

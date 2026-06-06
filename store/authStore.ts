@@ -11,18 +11,17 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   login: async (username, password) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await fetch(`${API_URL}/auth/login/`, {
+      const response = await fetch(`${API_URL}/login/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
-        credentials: "include", // ← crucial
+        credentials: "include",
       });
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.detail || "Identifiants invalides");
       }
       await get().fetchUser();
-      set({ isAuthenticated: true, isLoading: false });
     } catch (error) {
       set({ error: (error as Error).message, isLoading: false });
     }
@@ -31,7 +30,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   register: async (username, email, password, password2) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await fetch(`${API_URL}/auth/register/`, {
+      const response = await fetch(`${API_URL}/register/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, email, password, password2 }),
@@ -51,7 +50,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         throw new Error(errorMsg);
       }
       await get().fetchUser();
-      set({ isAuthenticated: true, isLoading: false });
     } catch (error) {
       set({ error: (error as Error).message, isLoading: false });
     }
@@ -64,12 +62,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       });
       if (response.ok) {
         const userData = await response.json();
-        set({ user: userData, isAuthenticated: true });
+        set({ user: userData, isAuthenticated: true, isLoading: false });
       } else {
-        set({ user: null, isAuthenticated: false });
+        set({ user: null, isAuthenticated: false, isLoading: false });
       }
     } catch (error) {
-      set({ user: null, isAuthenticated: false });
+      set({ user: null, isAuthenticated: false, isLoading: false });
     }
   },
 
