@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -14,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -21,7 +22,7 @@ import { Vehicle } from "@/types";
 import { useVehicleStore } from "@/store/vehicleStore";
 import { VehicleFormValues, vehicleSchema } from "@/zod/backoffice-schemas";
 import Image from "next/image";
-import { Textarea } from "../ui/textarea";
+import { getValidImageUrl } from "@/lib/utils";
 
 interface VehicleFormProps {
   vehicle?: Vehicle;
@@ -33,8 +34,7 @@ export function VehicleForm({ vehicle }: VehicleFormProps) {
   const [loading, setLoading] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [currentImageUrl, setCurrentImageUrl] = useState<string | null>(
-    (Array.isArray(vehicle?.images) ? vehicle.images[0] : vehicle?.images) ||
-      null,
+    vehicle?.images ? getValidImageUrl(vehicle.images[0]) : null,
   );
 
   const {
@@ -51,20 +51,34 @@ export function VehicleForm({ vehicle }: VehicleFormProps) {
           model: vehicle.model,
           year: vehicle.year,
           mileage: vehicle.mileage,
+          fuel_type: vehicle.fuel_type as
+            | "essence"
+            | "diesel"
+            | "electrique"
+            | "hybride",
+          transmission: vehicle.transmission as "manuel" | "automatique",
+          color: vehicle.color,
+          description: vehicle.description || "",
           vehicle_type: vehicle.vehicle_type,
           sale_price: vehicle.sale_price || "",
           rent_price: vehicle.rent_price || "",
-          description: vehicle.description || "",
+          rent_duration_min: vehicle.rent_duration_min || 12,
+          is_available: vehicle.is_available ?? true,
         }
       : {
           brand: "",
           model: "",
           year: new Date().getFullYear(),
           mileage: 0,
+          fuel_type: "essence",
+          transmission: "manuel",
+          color: "",
+          description: "",
           vehicle_type: "sale",
           sale_price: "",
           rent_price: "",
-          description: "",
+          rent_duration_min: 12,
+          is_available: true,
         },
   });
 
@@ -77,10 +91,16 @@ export function VehicleForm({ vehicle }: VehicleFormProps) {
     formData.append("model", data.model);
     formData.append("year", data.year.toString());
     formData.append("mileage", data.mileage.toString());
+    formData.append("fuel_type", data.fuel_type);
+    formData.append("transmission", data.transmission);
+    formData.append("color", data.color);
+    if (data.description) formData.append("description", data.description);
     formData.append("vehicle_type", data.vehicle_type);
     if (data.sale_price) formData.append("sale_price", data.sale_price);
     if (data.rent_price) formData.append("rent_price", data.rent_price);
-    if (data.description) formData.append("description", data.description);
+    if (data.rent_duration_min)
+      formData.append("rent_duration_min", data.rent_duration_min.toString());
+    formData.append("is_available", String(data.is_available));
     if (imageFile) formData.append("images", imageFile);
 
     let success = false;
@@ -99,7 +119,7 @@ export function VehicleForm({ vehicle }: VehicleFormProps) {
   };
 
   return (
-    <Card className="max-w-2xl mx-auto">
+    <Card className="max-w-3xl mx-auto">
       <CardHeader>
         <CardTitle>
           {vehicle ? "Modifier le véhicule" : "Ajouter un véhicule"}
@@ -109,14 +129,14 @@ export function VehicleForm({ vehicle }: VehicleFormProps) {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="brand">Marque</Label>
+              <Label htmlFor="brand">Marque *</Label>
               <Input id="brand" {...register("brand")} />
               {errors.brand && (
                 <p className="text-red-500 text-sm">{errors.brand.message}</p>
               )}
             </div>
             <div>
-              <Label htmlFor="model">Modèle</Label>
+              <Label htmlFor="model">Modèle *</Label>
               <Input id="model" {...register("model")} />
               {errors.model && (
                 <p className="text-red-500 text-sm">{errors.model.message}</p>
@@ -126,14 +146,14 @@ export function VehicleForm({ vehicle }: VehicleFormProps) {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="year">Année</Label>
+              <Label htmlFor="year">Année *</Label>
               <Input id="year" type="number" {...register("year")} />
               {errors.year && (
                 <p className="text-red-500 text-sm">{errors.year.message}</p>
               )}
             </div>
             <div>
-              <Label htmlFor="mileage">Kilométrage</Label>
+              <Label htmlFor="mileage">Kilométrage *</Label>
               <Input id="mileage" type="number" {...register("mileage")} />
               {errors.mileage && (
                 <p className="text-red-500 text-sm">{errors.mileage.message}</p>
@@ -141,8 +161,73 @@ export function VehicleForm({ vehicle }: VehicleFormProps) {
             </div>
           </div>
 
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="fuel_type">Carburant *</Label>
+              <Select
+                value={watch("fuel_type")}
+                onValueChange={(value) =>
+                  setValue(
+                    "fuel_type",
+                    value as "essence" | "diesel" | "electrique" | "hybride",
+                  )
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Choisir" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="essence">Essence</SelectItem>
+                  <SelectItem value="diesel">Diesel</SelectItem>
+                  <SelectItem value="electrique">Électrique</SelectItem>
+                  <SelectItem value="hybride">Hybride</SelectItem>
+                </SelectContent>
+              </Select>
+              {errors.fuel_type && (
+                <p className="text-red-500 text-sm">
+                  {errors.fuel_type.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <Label htmlFor="transmission">Transmission *</Label>
+              <Select
+                value={watch("transmission")}
+                onValueChange={(value) =>
+                  setValue("transmission", value as "manuel" | "automatique")
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Choisir" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="manuel">Manuelle</SelectItem>
+                  <SelectItem value="automatique">Automatique</SelectItem>
+                </SelectContent>
+              </Select>
+              {errors.transmission && (
+                <p className="text-red-500 text-sm">
+                  {errors.transmission.message}
+                </p>
+              )}
+            </div>
+          </div>
+
           <div>
-            <Label htmlFor="vehicle_type">Type d&apos;offre</Label>
+            <Label htmlFor="color">Couleur *</Label>
+            <Input id="color" {...register("color")} />
+            {errors.color && (
+              <p className="text-red-500 text-sm">{errors.color.message}</p>
+            )}
+          </div>
+
+          <div>
+            <Label htmlFor="description">Description</Label>
+            <Textarea id="description" rows={4} {...register("description")} />
+          </div>
+
+          <div>
+            <Label htmlFor="vehicle_type">Type d&apos;offre *</Label>
             <Select
               value={vehicleType}
               onValueChange={(value) =>
@@ -161,10 +246,11 @@ export function VehicleForm({ vehicle }: VehicleFormProps) {
 
           {vehicleType === "sale" && (
             <div>
-              <Label htmlFor="sale_price">Prix d&apos;achat (€)</Label>
+              <Label htmlFor="sale_price">Prix d&apos;achat (€) *</Label>
               <Input
                 id="sale_price"
                 type="number"
+                step="0.01"
                 {...register("sale_price")}
               />
               {errors.sale_price && (
@@ -176,24 +262,46 @@ export function VehicleForm({ vehicle }: VehicleFormProps) {
           )}
 
           {vehicleType === "rent" && (
-            <div>
-              <Label htmlFor="rent_price">Prix de location (€/mois)</Label>
-              <Input
-                id="rent_price"
-                type="number"
-                {...register("rent_price")}
-              />
-              {errors.rent_price && (
-                <p className="text-red-500 text-sm">
-                  {errors.rent_price.message}
-                </p>
-              )}
-            </div>
+            <>
+              <div>
+                <Label htmlFor="rent_price">Prix de location (€/mois) *</Label>
+                <Input
+                  id="rent_price"
+                  type="number"
+                  step="0.01"
+                  {...register("rent_price")}
+                />
+                {errors.rent_price && (
+                  <p className="text-red-500 text-sm">
+                    {errors.rent_price.message}
+                  </p>
+                )}
+              </div>
+              <div>
+                <Label htmlFor="rent_duration_min">
+                  Durée minimum (mois) *
+                </Label>
+                <Input
+                  id="rent_duration_min"
+                  type="number"
+                  {...register("rent_duration_min")}
+                />
+                {errors.rent_duration_min && (
+                  <p className="text-red-500 text-sm">
+                    {errors.rent_duration_min.message}
+                  </p>
+                )}
+              </div>
+            </>
           )}
 
-          <div>
-            <Label htmlFor="description">Description</Label>
-            <Textarea id="description" rows={4} {...register("description")} />
+          <div className="flex items-center justify-between">
+            <Label htmlFor="is_available">Disponible</Label>
+            <Switch
+              id="is_available"
+              checked={watch("is_available")}
+              onCheckedChange={(checked) => setValue("is_available", checked)}
+            />
           </div>
 
           <div>
