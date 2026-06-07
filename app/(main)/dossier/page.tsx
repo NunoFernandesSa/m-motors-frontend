@@ -15,6 +15,7 @@ import { ProfileForm } from "@/components/dashboard/ProfileForm";
 // import { VehicleList } from "@/components/dashboard/VehicleList";
 // import { NotificationsPanel } from "@/components/dashboard/NotificationsPanel";
 import { Loading } from "@/components/shared/Loading";
+import { redirect } from "next/navigation";
 
 export default function DashboardPage() {
   const {
@@ -36,8 +37,7 @@ export default function DashboardPage() {
       <Loading variant="spinner" text="Chargement du dashboard..." fullScreen />
     );
 
-  if (!user)
-    return <div className="container mx-auto p-4">Utilisateur non trouvé</div>;
+  if (!user) return redirect("/connexion");
 
   return (
     <div className="container mx-auto p-4 space-y-6">

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { useVehicleStore } from "@/store/vehicleStore";
@@ -12,6 +12,7 @@ export default function VehicleDetailPage() {
   const { id } = useParams();
   const { vehicleDetail, loading, error, fetchVehicleDetail } =
     useVehicleStore();
+  const router = useRouter();
 
   useEffect(() => {
     if (id) fetchVehicleDetail(id as string);
@@ -50,7 +51,6 @@ export default function VehicleDetailPage() {
     );
   }
 
-  // Calculs d'affichage
   const displayPrice =
     vehicleDetail.vehicle_type === "sale"
       ? `${parseInt(vehicleDetail.sale_price || "0").toLocaleString()} €`
@@ -118,11 +118,13 @@ export default function VehicleDetailPage() {
 
           {/* Actions */}
           <div className="pt-4 flex flex-wrap gap-4">
-            <button className="bg-primary text-primary-foreground px-6 py-2 rounded-md hover:bg-primary/90 transition">
-              Contacter
-            </button>
-            <button className="border border-input bg-background px-6 py-2 rounded-md hover:bg-accent transition">
-              Demander un essai
+            <button
+              className="bg-primary text-primary-foreground px-6 py-2 rounded-md hover:bg-primary/90 transition"
+              onClick={() => {
+                router.push(`/dossier`);
+              }}
+            >
+              Réserver
             </button>
           </div>
         </div>
