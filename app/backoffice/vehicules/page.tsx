@@ -3,17 +3,24 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Plus, Pencil, Trash2 } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
 import { toast } from "sonner";
 import { useVehicleStore } from "@/store/vehicleStore";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function VehiclesPage() {
   const { vehicles, loading, fetchAllVehicles, deleteVehicle } =
     useVehicleStore();
   const [search, setSearch] = useState("");
+  const [typeFilter, setTypeFilter] = useState<"all" | "sale" | "rent">("all");
 
   useEffect(() => {
     fetchAllVehicles();
@@ -29,9 +36,13 @@ export default function VehiclesPage() {
     }
   };
 
-  const filteredVehicles = vehicles.filter((v) =>
-    `${v.brand} ${v.model}`.toLowerCase().includes(search.toLowerCase()),
-  );
+  const filteredVehicles = vehicles.filter((v) => {
+    const matchSearch = `${v.brand} ${v.model}`
+      .toLowerCase()
+      .includes(search.toLowerCase());
+    const matchType = typeFilter === "all" || v.vehicle_type === typeFilter;
+    return matchSearch && matchType;
+  });
 
   return (
     <div className="space-y-6">
@@ -45,29 +56,43 @@ export default function VehiclesPage() {
         </Link>
       </div>
 
-      <Input
-        placeholder="Rechercher un véhicule..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="max-w-sm"
-      />
+      <div className="flex gap-4 items-center">
+        <Input
+          placeholder="Rechercher un véhicule..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="max-w-sm"
+        />
+        <Select
+          value={typeFilter}
+          onValueChange={(value) =>
+            setTypeFilter(value as "all" | "sale" | "rent")
+          }
+        >
+          <SelectTrigger className="w-45">
+            <SelectValue placeholder="Tous les types" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Tous</SelectItem>
+            <SelectItem value="sale">Achat</SelectItem>
+            <SelectItem value="rent">Location</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
 
       {loading ? (
         <p>Chargement...</p>
+      ) : filteredVehicles.length === 0 ? (
+        <p className="text-center text-muted-foreground">
+          Aucun véhicule trouvé
+        </p>
       ) : (
         <div className="grid gap-4">
           {filteredVehicles.map((vehicle) => (
             <Card key={vehicle.id}>
               <CardContent className="p-4 flex items-center gap-4">
-                <div className="relative w-24 h-24 bg-muted rounded overflow-hidden">
-                  {/* <Image
-                    src={vehicle.images?.[0] || "/placeholder-car.jpg"}
-                    alt={vehicle.model}
-                    fill
-                    className="object-cover"
-                  /> */}
-                </div>
                 <div className="flex-1">
+                  <span>id: {vehicle.id}</span>
                   <p className="font-semibold">
                     {vehicle.brand} {vehicle.model}
                   </p>
