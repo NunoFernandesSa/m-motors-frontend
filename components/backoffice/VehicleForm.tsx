@@ -222,7 +222,7 @@ export function VehicleForm({ vehicle }: VehicleFormProps) {
           </div>
 
           <div>
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description">Description *</Label>
             <Textarea id="description" rows={4} {...register("description")} />
           </div>
 
