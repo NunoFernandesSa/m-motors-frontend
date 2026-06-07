@@ -16,6 +16,7 @@ export interface MobileMenuButtonProps {
  */
 export interface Vehicle {
   id: number;
+  ref: string;
   brand: string;
   model: string;
   year: number;

@@ -92,7 +92,9 @@ export default function VehiclesPage() {
             <Card key={vehicle.id}>
               <CardContent className="p-4 flex items-center gap-4">
                 <div className="flex-1">
-                  <span>id: {vehicle.id}</span>
+                  <p className="text-xs text-muted-foreground">
+                    Réf: {vehicle.ref}
+                  </p>
                   <p className="font-semibold">
                     {vehicle.brand} {vehicle.model}
                   </p>
