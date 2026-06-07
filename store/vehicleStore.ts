@@ -111,13 +111,79 @@ export const useVehicleStore = create<VehicleState>()((set, get) => ({
     }
   },
 
-  // TODO: Add vehicle detail state
-  // fetchVehicleDetail: async (id: number) => {
-  //   const response = await fetch(`${API_URL}/vehicles/${id}/`);
-  //   if (!response.ok) throw new Error("Erreur de chargement");
-  //   const data = await response.json();
-  //   set((state) => ({
-  //     vehicleDetail: data,
-  //   }));
-  // },
+  addVehicle: async (formData: FormData) => {
+    set({ loading: true, error: null });
+    const token = localStorage.getItem("access_token");
+    try {
+      const response = await fetch(`${API_URL}/vehicles/`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+      if (!response.ok) throw new Error("Erreur lors de l'ajout");
+      const newVehicle = await response.json();
+      set((state) => ({ vehicles: [newVehicle, ...state.vehicles] }));
+      return true;
+    } catch (error) {
+      set({ error: (error as Error).message, loading: false });
+      return false;
+    }
+  },
+
+  updateVehicle: async (id: number, formData: FormData) => {
+    set({ loading: true, error: null });
+    const token = localStorage.getItem("access_token");
+    try {
+      const response = await fetch(`${API_URL}/vehicles/${id}/`, {
+        method: "PUT",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+      if (!response.ok) throw new Error("Erreur lors de la modification");
+      const updatedVehicle = await response.json();
+      set((state) => ({
+        vehicles: state.vehicles.map((v) => (v.id === id ? updatedVehicle : v)),
+        loading: false,
+      }));
+      return true;
+    } catch (error) {
+      set({ error: (error as Error).message, loading: false });
+      return false;
+    }
+  },
+
+  deleteVehicle: async (id: number) => {
+    set({ loading: true, error: null });
+    const token = localStorage.getItem("access_token");
+    try {
+      const response = await fetch(`${API_URL}/vehicles/${id}/`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok) throw new Error("Erreur lors de la suppression");
+      set((state) => ({
+        vehicles: state.vehicles.filter((v) => v.id !== id),
+        loading: false,
+      }));
+      return true;
+    } catch (error) {
+      set({ error: (error as Error).message, loading: false });
+      return false;
+    }
+  },
+
+  fetchAllVehicles: async () => {
+    set({ loading: true, error: null });
+    const token = localStorage.getItem("access_token");
+    try {
+      const response = await fetch(`${API_URL}/vehicles/`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok) throw new Error("Erreur de chargement");
+      const data = await response.json();
+      set({ vehicles: data, loading: false });
+    } catch (error) {
+      set({ error: (error as Error).message, loading: false });
+    }
+  },
 }));

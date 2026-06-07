@@ -12,3 +12,9 @@ export const NAV_LINKS = [
     condition: isCommercial,
   },
 ];
+
+export const BACKOFFICE_NAV_LINKS = [
+  { href: "/backoffice", label: "Dashboard" },
+  { href: "/backoffice/vehicules", label: "Véhicules" },
+  { href: "/backoffice/dossiers", label: "Dossiers" },
+];

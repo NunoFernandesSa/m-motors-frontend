@@ -51,6 +51,10 @@ export interface VehicleState {
   loadMore: () => Promise<void>;
   clearVehicles: () => void;
   resetToType: (type: string) => void;
+  addVehicle: (formData: FormData) => Promise<boolean>;
+  updateVehicle: (id: number, formData: FormData) => Promise<boolean>;
+  deleteVehicle: (id: number) => Promise<boolean>;
+  fetchAllVehicles: () => Promise<void>;
 }
 
 /**
@@ -120,4 +124,20 @@ export interface AuthState {
   ) => Promise<void>;
   logout: () => Promise<void>;
   fetchUser: () => Promise<void>;
+}
+
+/**
+ * ----- Vehicle -----
+ * Interface représents a vehicle
+ */
+export interface Vehicle {
+  id: number;
+  brand: string;
+  model: string;
+  year: number;
+  mileage: number;
+  vehicle_type: "sale" | "rent";
+  sale_price?: string;
+  rent_price?: string;
+  images?: string[];
 }
