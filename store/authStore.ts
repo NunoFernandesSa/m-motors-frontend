@@ -56,7 +56,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         }
         throw new Error(errorMsg);
       }
-      // Stocker les tokens
+      // Stocker tokens on localStorage
       localStorage.setItem("access_token", data.access);
       localStorage.setItem("refresh_token", data.refresh);
       // Stock tokens on cookies
@@ -70,28 +70,59 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
   },
 
+  refreshToken: async () => {
+    const refresh = localStorage.getItem("refresh_token");
+    if (!refresh) throw new Error("No refresh token");
+    const response = await fetch(`${API_URL}/auth/refresh/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ refresh }),
+    });
+    if (!response.ok) throw new Error("Refresh failed");
+    const data = await response.json();
+    localStorage.setItem("access_token", data.access);
+    setCookie("access_token", data.access, 15 * 60);
+    if (data.refresh) {
+      localStorage.setItem("refresh_token", data.refresh);
+      setCookie("refresh_token", data.refresh, 7 * 24 * 3600);
+    }
+    return data.access;
+  },
+
   fetchUser: async () => {
-    const token = localStorage.getItem("access_token");
+    let token = localStorage.getItem("access_token");
     if (!token) {
       set({ user: null, isAuthenticated: false, isLoading: false });
       return;
     }
-    try {
-      const response = await fetch(`${API_URL}/auth/me/`, {
-        headers: { Authorization: `Bearer ${token}` },
+
+    const makeRequest = async (t: string) => {
+      return fetch(`${API_URL}/auth/me/`, {
+        headers: { Authorization: `Bearer ${t}` },
       });
+    };
+
+    try {
+      let response = await makeRequest(token);
+      if (response.status === 401) {
+        try {
+          const newToken = await get().refreshToken();
+          response = await makeRequest(newToken);
+        } catch (refreshError) {
+          throw new Error("Refresh failed");
+        }
+      }
       if (response.ok) {
         const userData = await response.json();
         set({ user: userData, isAuthenticated: true, isLoading: false });
       } else {
-        // token expired
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("refresh_token");
-        deleteCookie("access_token");
-        deleteCookie("refresh_token");
-        set({ user: null, isAuthenticated: false, isLoading: false });
+        throw new Error("Invalid token");
       }
     } catch (error) {
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
+      deleteCookie("access_token");
+      deleteCookie("refresh_token");
       set({ user: null, isAuthenticated: false, isLoading: false });
     }
   },
@@ -112,6 +143,15 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       localStorage.removeItem("refresh_token");
       deleteCookie("access_token");
       deleteCookie("refresh_token");
+      set({ user: null, isAuthenticated: false, isLoading: false });
+    }
+  },
+
+  initAuth: async () => {
+    const token = localStorage.getItem("access_token");
+    if (token && !get().isAuthenticated) {
+      await get().fetchUser();
+    } else if (!token) {
       set({ user: null, isAuthenticated: false, isLoading: false });
     }
   },

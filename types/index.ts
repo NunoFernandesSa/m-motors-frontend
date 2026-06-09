@@ -125,6 +125,8 @@ export interface AuthState {
   ) => Promise<void>;
   logout: () => Promise<void>;
   fetchUser: () => Promise<void>;
+  initAuth: () => Promise<void>;
+  refreshToken: () => Promise<string>;
 }
 
 /**
