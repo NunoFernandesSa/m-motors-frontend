@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import FilterBar from "@/components/vehicles/FilterBar";
 import VehicleCard from "@/components/vehicles/VehicleCard";
 import { useVehicleStore } from "@/store/vehicleStore";
 
-function PurchaseVehicle() {
+const CataloguePage = () => {
   const {
     vehicles,
     loading,
@@ -17,22 +17,31 @@ function PurchaseVehicle() {
     resetToType,
   } = useVehicleStore();
 
+  const [activeType, setActiveType] = useState<"sale" | "rent">("sale");
+
   // Filter vehicles to sale only
-  const saleVehicles = useMemo(
-    () => vehicles.filter((v) => v.vehicle_type === "sale"),
-    [vehicles],
+  const filteredVehicles = useMemo(
+    () => vehicles.filter((v) => v.vehicle_type === activeType),
+    [vehicles, activeType],
   );
 
   useEffect(() => {
-    resetToType("sale");
+    resetToType(activeType);
     fetchVehicles(true);
-  }, [resetToType, fetchVehicles]);
+  }, [activeType, resetToType, fetchVehicles]);
 
   const handleBrandChange = (brand: string) => setFilters({ brand });
   const handleModelChange = (model: string) => setFilters({ model });
   const handleMinPriceChange = (min: string) => setFilters({ min_price: min });
   const handleMaxPriceChange = (max: string) => setFilters({ max_price: max });
-  const handleReset = () => resetToType("sale");
+  const handleReset = () => {
+    setFilters({ brand: "", model: "", min_price: "", max_price: "" });
+    resetToType(activeType);
+  };
+
+  const handleVehicleTypeChange = (type: string) => {
+    setActiveType(type as "sale" | "rent");
+  };
 
   useEffect(() => {
     const onScroll = () => {
@@ -51,39 +60,64 @@ function PurchaseVehicle() {
 
   return (
     <div className="container mx-auto p-4 space-y-6">
-      <h1 className="text-2xl font-bold">Nos véhicules à vendre</h1>
+      <h1 className="text-2xl font-bold">Nos véhicules</h1>
+
+      {/* Sélecteur Achat / Location */}
+      <div className="flex gap-4 mb-4">
+        <button
+          onClick={() => handleVehicleTypeChange("sale")}
+          className={`px-4 py-2 rounded-md font-medium ${
+            activeType === "sale"
+              ? "bg-blue-600 text-white"
+              : "bg-gray-200 text-gray-800"
+          }`}
+        >
+          Achat
+        </button>
+        <button
+          onClick={() => handleVehicleTypeChange("rent")}
+          className={`px-4 py-2 rounded-md font-medium ${
+            activeType === "rent"
+              ? "bg-blue-600 text-white"
+              : "bg-gray-200 text-gray-800"
+          }`}
+        >
+          Location
+        </button>
+      </div>
 
       <FilterBar
         filters={filters}
-        onVehicleTypeChange={() => {}}
+        onVehicleTypeChange={handleVehicleTypeChange}
         onBrandChange={handleBrandChange}
         onModelChange={handleModelChange}
         onMinPriceChange={handleMinPriceChange}
         onMaxPriceChange={handleMaxPriceChange}
         onReset={handleReset}
-        hideVehicleType
+        hideVehicleType={true}
       />
 
-      {loading && saleVehicles.length === 0 && (
+      {loading && filteredVehicles.length === 0 && (
         <p className="text-center">Chargement…</p>
       )}
-      {!loading && saleVehicles.length === 0 && (
+      {!loading && filteredVehicles.length === 0 && (
         <p className="text-center text-muted-foreground">
-          Aucun véhicule en vente ne correspond à vos critères.
+          Aucun véhicule {activeType === "sale" ? "en vente" : "en location"} ne
+          correspond à vos critères.
         </p>
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {saleVehicles.map((vehicle) => (
+        {filteredVehicles.map((vehicle) => (
           <VehicleCard key={vehicle.id} vehicle={vehicle} />
         ))}
       </div>
 
-      {loading && saleVehicles.length > 0 && (
+      {loading && filteredVehicles.length > 0 && (
         <p className="text-center">Chargement de plus de véhicules…</p>
       )}
     </div>
   );
-}
+};
 
-export default PurchaseVehicle;
+export default CataloguePage;

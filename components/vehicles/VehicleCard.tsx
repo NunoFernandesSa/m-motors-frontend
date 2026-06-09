@@ -34,7 +34,7 @@ export default function VehicleCard({
   const imageUrl = vehicle.images || "/images/placeholder-car.jpg";
 
   return (
-    <Link href={`/vehicule/${vehicle.id}`}>
+    <Link href={`/catalogue/${vehicle.id}`}>
       <Card className="h-full overflow-hidden hover:shadow-lg transition-shadow">
         <div className="relative h-48 w-full bg-muted">
           <Image

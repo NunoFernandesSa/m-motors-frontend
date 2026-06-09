@@ -17,7 +17,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "M-Motors",
-  description: "A car dealership website built with Next.js and Tailwind CSS.",
+  description:
+    "M-Motors : votre expert automobile pour l'achat ou la location longue durée de véhicules de qualité. Découvrez notre histoire et nos services.",
 };
 
 export default function RootLayout({
