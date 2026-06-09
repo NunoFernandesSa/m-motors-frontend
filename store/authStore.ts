@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { API_URL } from "@/constants/api";
 import { AuthState } from "@/types";
+import { deleteCookie, setCookie } from "@/helpers";
 
 export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
@@ -20,9 +21,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       if (!response.ok) {
         throw new Error(data.detail || "Identifiants invalides");
       }
-      // Stocker les tokens dans localStorage
+      // Stock tokens on localStorage
       localStorage.setItem("access_token", data.access);
       localStorage.setItem("refresh_token", data.refresh);
+      // Stock tokens on cookies
+      // 15 minutes
+      setCookie("access_token", data.access, 15 * 60);
+      // 7 days
+      setCookie("refresh_token", data.refresh, 7 * 24 * 3600);
       await get().fetchUser();
     } catch (error) {
       set({ error: (error as Error).message, isLoading: false });
@@ -53,6 +59,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       // Stocker les tokens
       localStorage.setItem("access_token", data.access);
       localStorage.setItem("refresh_token", data.refresh);
+      // Stock tokens on cookies
+      // 15 minutes
+      setCookie("access_token", data.access, 15 * 60);
+      // 7 days
+      setCookie("refresh_token", data.refresh, 7 * 24 * 3600);
       await get().fetchUser();
     } catch (error) {
       set({ error: (error as Error).message, isLoading: false });
@@ -73,9 +84,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         const userData = await response.json();
         set({ user: userData, isAuthenticated: true, isLoading: false });
       } else {
-        // Token invalide ou expiré
+        // token expired
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
+        deleteCookie("access_token");
+        deleteCookie("refresh_token");
         set({ user: null, isAuthenticated: false, isLoading: false });
       }
     } catch (error) {
@@ -86,7 +99,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   logout: async () => {
     set({ isLoading: true });
     try {
-      // Appel au backend pour invalider (optionnel)
       await fetch(`${API_URL}/auth/logout/`, {
         method: "POST",
         headers: {
@@ -98,6 +110,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     } finally {
       localStorage.removeItem("access_token");
       localStorage.removeItem("refresh_token");
+      deleteCookie("access_token");
+      deleteCookie("refresh_token");
       set({ user: null, isAuthenticated: false, isLoading: false });
     }
   },
