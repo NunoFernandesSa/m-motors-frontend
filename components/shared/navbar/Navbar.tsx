@@ -3,11 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
-
-import Image from "next/image";
-import { User, LogOut, Menu, X } from "lucide-react";
+import { User, LogOut, Car, LayoutDashboard, FolderOpen } from "lucide-react";
 import { useState, useEffect } from "react";
-import { NAV_LINKS } from "@/constants/navlinks";
 import MobileMenuButton from "./MobileMenuButton";
 import Logo from "./Logo";
 import { useAuthStore } from "@/store/authStore";
@@ -18,12 +15,10 @@ function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  // Close mobile menu on route change
   useEffect(() => {
     setIsMobileMenuOpen(false);
   }, [pathname]);
 
-  // Effect of scroll for slightly transparent/shadowed background
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", handleScroll);
@@ -31,17 +26,36 @@ function Navbar() {
   }, []);
 
   const isAuthenticated = !!user;
-  const userGroups = user?.groups || [];
-  const isCommercial =
-    userGroups.includes("commercial") || userGroups.includes("admin");
-  const isAdmin = userGroups.includes("admin");
+  const userGroups = (user as { groups?: string[] })?.groups || [];
+  const isAdminOrCommercial =
+    userGroups.includes("admin") || userGroups.includes("commercial");
 
-  const visibleLinks = NAV_LINKS.filter((link) => {
-    if (link.public) return true;
-    if (!isAuthenticated) return false;
+  // Définition des liens selon le rôle
+  let navLinks = [];
 
-    return typeof link.condition === "function" ? link.condition(user) : true;
-  });
+  if (!isAuthenticated) {
+    // Public
+    navLinks = [
+      { href: "/catalogue", label: "Catalogue", icon: Car },
+      { href: "/connexion", label: "Connexion", icon: User },
+      { href: "/inscription", label: "Inscription", icon: User },
+    ];
+  } else if (isAdminOrCommercial) {
+    // Admin / Commercial
+    navLinks = [
+      { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+      { href: "/admin/dossiers", label: "Dossiers clients", icon: FolderOpen },
+      { href: "/admin/vehicles", label: "Véhicules", icon: Car },
+      { href: "/catalogue", label: "Catalogue", icon: Car },
+    ];
+  } else {
+    // standard user
+    navLinks = [
+      { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+      { href: "/dossiers", label: "Mes dossiers", icon: FolderOpen },
+      { href: "/catalogue", label: "Catalogue", icon: Car },
+    ];
+  }
 
   return (
     <nav
@@ -52,21 +66,21 @@ function Navbar() {
       }`}
     >
       <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
-        {/* Logo & Brand */}
         <Logo />
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex gap-6">
-          {visibleLinks.map((link) => (
+          {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className={`text-sm font-medium transition-colors hover:text-primary ${
+              className={`text-sm font-medium transition-colors hover:text-primary flex items-center gap-1 ${
                 pathname === link.href || pathname.startsWith(link.href + "/")
                   ? "text-primary"
                   : "text-muted-foreground"
               }`}
             >
+              <link.icon className="h-4 w-4" />
               {link.label}
             </Link>
           ))}
@@ -109,7 +123,7 @@ function Navbar() {
       {/* Mobile Menu Drawer */}
       {isMobileMenuOpen && (
         <div className="md:hidden border-t bg-background px-4 py-4 space-y-3">
-          {visibleLinks.map((link) => (
+          {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}

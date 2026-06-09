@@ -1,73 +1,48 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { jwtDecode } from "jwt-decode"; // npm install jwt-decode
+import { jwtDecode } from "jwt-decode";
+
+interface TokenPayload {
+  role: string;
+  [key: string]: unknown;
+}
 
 export async function proxy(request: NextRequest) {
   const accessToken = request.cookies.get("access_token")?.value;
-  const refreshToken = request.cookies.get("refresh_token")?.value;
   const { pathname } = request.nextUrl;
 
   // Routes publiques
-  const publicPaths = ["/", "/catalogue", "/connexion", "/inscription"];
-  const isPublic =
-    publicPaths.includes(pathname) || pathname.startsWith("/catalogue/");
-
-  const isBackoffice = pathname.startsWith("/backoffice");
-  const isProtected = !isPublic && !isBackoffice;
+  const publicPaths = ["/connexion", "/inscription", "/catalogue"];
+  const isPublic = publicPaths.some(
+    (path) => pathname === path || pathname.startsWith("/catalogue/"),
+  );
 
   if (isPublic) {
     return NextResponse.next();
   }
 
-  const isTokenExpired = (token: string) => {
-    try {
-      const decoded: { exp: number } = jwtDecode(token);
-      return decoded.exp * 1000 < Date.now();
-    } catch {
-      return true;
-    }
-  };
+  // Routes dashboard (user connecté)
+  const isDashboard = pathname.startsWith("/dashboard");
+  const isBackoffice = pathname.startsWith("/admin");
 
-  if (accessToken && !isTokenExpired(accessToken)) {
-    return NextResponse.next();
+  if ((isDashboard || isBackoffice) && !accessToken) {
+    return NextResponse.redirect(new URL("/connexion", request.url));
   }
 
-  if (refreshToken) {
+  // Option : vérifier le rôle pour /admin (décodage simple)
+  if (isBackoffice && accessToken) {
     try {
-      const refreshRes = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ refresh_token: refreshToken }),
-        },
-      );
-
-      if (refreshRes.ok) {
-        const { access_token: newAccessToken } = await refreshRes.json();
-        const response = NextResponse.next();
-        response.cookies.set("access_token", newAccessToken, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-          maxAge: 15 * 60, // 15 minutes
-          path: "/",
-        });
-        return response;
-      } else {
-        const response = NextResponse.redirect(
-          new URL("/connexion", request.url),
-        );
-        response.cookies.delete("access_token");
-        response.cookies.delete("refresh_token");
-        return response;
+      const decoded: TokenPayload = jwtDecode(accessToken);
+      const role = decoded.role; // à adapter selon ton token
+      if (role !== "admin" && role !== "commercial") {
+        return NextResponse.redirect(new URL("/dashboard", request.url));
       }
-    } catch (error) {
-      console.error("Refresh error:", error);
+    } catch {
       return NextResponse.redirect(new URL("/connexion", request.url));
     }
   }
 
-  return NextResponse.redirect(new URL("/connexion", request.url));
+  return NextResponse.next();
 }
 
 export const config = {
