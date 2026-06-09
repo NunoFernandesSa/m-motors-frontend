@@ -1,55 +1,51 @@
 "use client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useAuthStore } from "@/store/authStore";
-import { useVehicleStore } from "@/store/vehicleStore";
+
+import { useState } from "react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 
-export default function BackofficePage() {
-  const [vehiclesCount, setVehiclesCount] = useState(0);
-  const { user } = useAuthStore();
-  const { fetchAllVehicles, vehicles, loading } = useVehicleStore();
+export default function AdminDashboard() {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  useEffect(() => {
-    fetchAllVehicles();
-  }, [fetchAllVehicles]);
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <p>Chargement des données...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center h-64 gap-4">
+        <p className="text-red-500">{error}</p>
+        <Button onClick={() => window.location.reload()}>Réessayer</Button>
+      </div>
+    );
+  }
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold">Espace commercial / admin</h1>
-      <p>
-        Bienvenue {user?.username} (rôle : {user?.role})
-      </p>
-
-      <div className="space-y-6 pt-6">
+    <div className="space-y-6">
+      <div>
         <h1 className="text-2xl font-bold">Tableau de bord</h1>
+        <p className="text-muted-foreground">
+          Bienvenue dans l&apos;espace d&apos;administration
+        </p>
+      </div>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Link href="/backoffice/vehicules">
-            <Card className="hover:bg-secondary">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">Véhicules</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-2xl font-bold">
-                  {loading ? "..." : vehicles.length}
-                </p>
-                <p className="text-xs text-muted-foreground">total</p>
-              </CardContent>
-            </Card>
-          </Link>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4"></div>
 
-          <Link href="/backoffice/dossiers">
-            <Card className="hover:bg-secondary">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">Dossiers</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-2xl font-bold">5</p>
-                <p className="text-xs text-muted-foreground">3 en attente</p>
-              </CardContent>
-            </Card>
-          </Link>
+      {/* Section actions rapides */}
+      <div className="mt-8">
+        <h2 className="text-lg font-semibold mb-4">Actions rapides</h2>
+        <div className="flex flex-wrap gap-4">
+          <Button asChild>
+            <Link href="/backoffice/vehicles/new">➕ Ajouter un véhicule</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link href="/backoffice/dossiers">📋 Voir tous les dossiers</Link>
+          </Button>
         </div>
       </div>
     </div>
