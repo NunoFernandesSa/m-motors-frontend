@@ -22,7 +22,7 @@ import { Vehicle } from "@/types";
 import { useVehicleStore } from "@/store/vehicleStore";
 import { VehicleFormValues, vehicleSchema } from "@/zod/backoffice-schemas";
 import Image from "next/image";
-import { getValidImageUrl } from "@/lib/utils";
+import { API_URL } from "@/constants/api";
 
 interface VehicleFormProps {
   vehicle?: Vehicle;
@@ -32,10 +32,9 @@ export function VehicleForm({ vehicle }: VehicleFormProps) {
   const router = useRouter();
   const { addVehicle, updateVehicle } = useVehicleStore();
   const [loading, setLoading] = useState(false);
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [currentImageUrl, setCurrentImageUrl] = useState<string | null>(
-    vehicle?.images ? getValidImageUrl(vehicle.images[0]) : null,
-  );
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+
+  const existingImages = vehicle?.images || [];
 
   const {
     register,
@@ -84,6 +83,10 @@ export function VehicleForm({ vehicle }: VehicleFormProps) {
 
   const vehicleType = watch("vehicle_type");
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) setImageFiles(Array.from(e.target.files));
+  };
+
   const onSubmit = async (data: VehicleFormValues) => {
     setLoading(true);
     const formData = new FormData();
@@ -101,7 +104,11 @@ export function VehicleForm({ vehicle }: VehicleFormProps) {
     if (data.rent_duration_min)
       formData.append("rent_duration_min", data.rent_duration_min.toString());
     formData.append("is_available", String(data.is_available));
-    if (imageFile) formData.append("images", imageFile);
+
+    // Add images to FormData
+    for (const file of imageFiles) {
+      formData.append("uploaded_images", file);
+    }
 
     let success = false;
     if (vehicle) {
@@ -116,6 +123,14 @@ export function VehicleForm({ vehicle }: VehicleFormProps) {
     } else {
       toast.error("Erreur lors de l'enregistrement");
     }
+  };
+
+  // Construct complete URL for each existing image
+  const getImageUrl = (imageObj: { image?: string }) => {
+    if (!imageObj?.image) return null;
+    const url = imageObj.image;
+    if (url.startsWith("http")) return url;
+    return `${API_URL}${url}`;
   };
 
   return (
@@ -304,26 +319,56 @@ export function VehicleForm({ vehicle }: VehicleFormProps) {
             />
           </div>
 
+          {/* Upload multiple images field */}
           <div>
-            <Label htmlFor="image">Image principale</Label>
+            <Label htmlFor="image">Images (plusieurs fichiers possibles)</Label>
             <Input
               id="image"
               type="file"
+              multiple
               accept="image/*"
-              onChange={(e) => setImageFile(e.target.files?.[0] || null)}
+              onChange={handleFileChange}
             />
-            {currentImageUrl && !imageFile && (
-              <div className="mt-2">
-                <Image
-                  src={currentImageUrl}
-                  alt="Current"
-                  width={128}
-                  height={128}
-                  className="w-32 h-32 object-cover rounded"
-                />
-                <p className="text-xs text-muted-foreground">Image actuelle</p>
+            {imageFiles.length > 0 && (
+              <div className="mt-2 flex gap-2 flex-wrap">
+                {imageFiles.map((file, idx) => (
+                  <div key={idx} className="relative w-20 h-20">
+                    <Image
+                      src={URL.createObjectURL(file)}
+                      alt={`preview-${idx}`}
+                      fill
+                      className="object-cover rounded"
+                    />
+                  </div>
+                ))}
               </div>
             )}
+            {vehicle?.images &&
+              vehicle.images.length > 0 &&
+              imageFiles.length === 0 && (
+                <div className="mt-2">
+                  <p className="text-sm text-muted-foreground">
+                    Images actuelles :
+                  </p>
+                  <div className="flex gap-2 flex-wrap mt-1">
+                    {vehicle.images.map((img, idx) => {
+                      const url = getImageUrl(
+                        typeof img === "string" ? { image: img } : img,
+                      );
+                      return url ? (
+                        <div key={idx} className="relative w-20 h-20">
+                          <Image
+                            src={url}
+                            alt={`existing-${idx}`}
+                            fill
+                            className="object-cover rounded"
+                          />
+                        </div>
+                      ) : null;
+                    })}
+                  </div>
+                </div>
+              )}
           </div>
 
           <div className="flex gap-2 pt-4">

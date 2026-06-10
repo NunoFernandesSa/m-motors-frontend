@@ -2,14 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 import { useVehicleStore } from "@/store/vehicleStore";
 import { useAuthStore } from "@/store/authStore";
-import { getValidImageUrl } from "@/lib/utils";
 import { Loading } from "@/components/shared/Loading";
 import { toast } from "sonner";
 import { API_URL } from "@/constants/api";
+import ImageGallery from "@/components/vehicles/ImageGallery";
 
 export default function VehicleDetailPage() {
   const { id } = useParams();
@@ -33,7 +32,6 @@ export default function VehicleDetailPage() {
 
     setCreatingFolder(true);
     try {
-      // 1. Créer le dossier
       const folderRes = await fetch(`${API_URL}/folders/`, {
         method: "POST",
         headers: {
@@ -52,7 +50,6 @@ export default function VehicleDetailPage() {
         throw new Error(errData.detail || "Erreur création dossier");
       }
 
-      // 2. Récupérer le dernier dossier de l'utilisateur
       const listRes = await fetch(
         `${API_URL}/folders/?user_id=${user.id}&ordering=-created_at`,
         {
@@ -65,7 +62,6 @@ export default function VehicleDetailPage() {
         throw new Error("Impossible de récupérer la liste des dossiers");
 
       const data = await listRes.json();
-      // Adapter selon la pagination de ton API (peut être data.results ou data directement)
       const foldersList = data.results || data;
       if (!foldersList || foldersList.length === 0) {
         throw new Error("Aucun dossier trouvé pour cet utilisateur");
@@ -77,8 +73,10 @@ export default function VehicleDetailPage() {
         "Dossier créé, vous pouvez maintenant ajouter vos documents",
       );
       router.push(`/dossier/${folderId}/documents`);
-    } catch (err: any) {
-      toast.error(err.message);
+    } catch (err: unknown) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Erreur inconnue";
+      toast.error(errorMessage);
     } finally {
       setCreatingFolder(false);
     }
@@ -125,11 +123,13 @@ export default function VehicleDetailPage() {
   const offerLabel =
     vehicleDetail.vehicle_type === "sale" ? "Achat" : "Location LLD";
 
-  const imageUrl = getValidImageUrl(vehicleDetail.images?.[0]);
+  // Vérifier que vehicleDetail.images existe et est un tableau
+  const images = Array.isArray(vehicleDetail.images)
+    ? vehicleDetail.images
+    : [];
 
   return (
     <div className="container mx-auto p-4 md:p-6">
-      {/* Bouton retour */}
       <Link
         href="/catalogue"
         className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-6"
@@ -138,14 +138,16 @@ export default function VehicleDetailPage() {
       </Link>
 
       <div className="grid md:grid-cols-2 gap-8">
-        {/* Image principale */}
-        <div className="relative h-96 w-full bg-muted rounded-lg overflow-hidden">
-          <Image
-            src={imageUrl[0] || "/images/placeholder-car.jpg"}
-            alt={`${vehicleDetail.brand} ${vehicleDetail.model}`}
-            fill
-            className="object-cover"
-            priority
+        {/* Galerie d'images (carrousel) */}
+        <div className="w-full">
+          <ImageGallery
+            images={images.map((url, index) => ({
+              id: index,
+              image: url,
+              order: index,
+              url,
+            }))}
+            vehicleName={`${vehicleDetail.brand} ${vehicleDetail.model}`}
           />
         </div>
 
@@ -182,7 +184,6 @@ export default function VehicleDetailPage() {
             </div>
           )}
 
-          {/* Actions */}
           <div className="pt-4 flex flex-wrap gap-4">
             <button
               className="bg-primary text-primary-foreground px-6 py-2 rounded-md hover:bg-primary/90 transition disabled:opacity-50"
