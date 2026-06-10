@@ -135,7 +135,7 @@ export default function RegisterPage() {
               type="button"
               variant="outline"
               className="w-full"
-              onClick={() => router.push("/auth/login")}
+              onClick={() => router.push("/connexion")}
             >
               Déjà un compte ? Se connecter
             </Button>
