@@ -1,11 +1,5 @@
 "use client";
 
-/**
- * @license: MIT
- * @author: nuno fernandes
- * @Copyright (c) 2026 m-motors. All rights reserved.
- */
-
 import { JSX } from "react";
 import { Label } from "../ui/label";
 import {
@@ -20,6 +14,11 @@ import { Button } from "../ui/button";
 import { FilterBarProps } from "@/types";
 import { Card } from "../ui/card";
 
+/**
+ * FilterBar component that provides the filter options for the vehicle catalogue
+ * @param {FilterBarProps} props - The props object containing the filter options
+ * @returns {JSX.Element} The rendered filter bar
+ */
 export default function FilterBar({
   filters,
   onVehicleTypeChange,
@@ -32,10 +31,12 @@ export default function FilterBar({
 }: FilterBarProps): JSX.Element {
   return (
     <Card className="p-4">
-      <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:flex-wrap">
+      <div className="flex flex-col flex-wrap gap-4 md:flex-row md:items-end md:gap-x-4 md:gap-y-0">
         {!hideVehicleType && (
-          <div className="min-w-45 flex-1">
-            <Label htmlFor="vehicle_type">Type d&apos;offre</Label>
+          <div className="flex-1 min-w-35">
+            <Label htmlFor="vehicle_type" className="mb-1 block">
+              Type d&apos;offre
+            </Label>
             <Select
               value={filters.vehicle_type}
               onValueChange={onVehicleTypeChange}
@@ -52,8 +53,10 @@ export default function FilterBar({
           </div>
         )}
 
-        <div className="min-w-45 flex-1">
-          <Label htmlFor="brand">Marque</Label>
+        <div className="flex-1 min-w-35">
+          <Label htmlFor="brand" className="mb-1 block">
+            Marque
+          </Label>
           <Input
             id="brand"
             value={filters.brand}
@@ -62,8 +65,10 @@ export default function FilterBar({
           />
         </div>
 
-        <div className="min-w-45 flex-1">
-          <Label htmlFor="model">Modèle</Label>
+        <div className="flex-1 min-w-35">
+          <Label htmlFor="model" className="mb-1 block">
+            Modèle
+          </Label>
           <Input
             id="model"
             value={filters.model}
@@ -72,9 +77,11 @@ export default function FilterBar({
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4 min-w-65">
-          <div>
-            <Label htmlFor="min_price">Prix min (€)</Label>
+        <div className="flex flex-1 gap-2 min-w-45">
+          <div className="flex-1">
+            <Label htmlFor="min_price" className="mb-1 block">
+              Prix min (€)
+            </Label>
             <Input
               id="min_price"
               type="number"
@@ -83,9 +90,10 @@ export default function FilterBar({
               placeholder="0"
             />
           </div>
-
-          <div>
-            <Label htmlFor="max_price">Prix max (€)</Label>
+          <div className="flex-1">
+            <Label htmlFor="max_price" className="mb-1 block">
+              Prix max (€)
+            </Label>
             <Input
               id="max_price"
               type="number"
@@ -96,7 +104,7 @@ export default function FilterBar({
           </div>
         </div>
 
-        <Button variant="outline" onClick={onReset} className="xl:ml-auto">
+        <Button variant="outline" onClick={onReset} className="self-end">
           Réinitialiser
         </Button>
       </div>
