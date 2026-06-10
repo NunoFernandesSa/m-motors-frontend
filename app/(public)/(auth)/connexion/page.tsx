@@ -17,21 +17,18 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { LoginFormValues, loginSchema } from "@/zod";
 import { useEffect } from "react";
+import Link from "next/link";
 
 export default function LoginPage() {
   const { login, isLoading, error, isAuthenticated, user } = useAuthStore();
   const router = useRouter();
 
   useEffect(() => {
-    console.log("isAuthenticated:", isAuthenticated, "user:", user);
     if (isAuthenticated && user) {
-      console.log("Rôle détecté:", user.role);
-      // Redirect based on role
-      if (user.role === "admin" || user.role === "commercial") {
-        console.log("Redirection vers backoffice");
+      const groups = (user as { groups?: string[] })?.groups || [];
+      if (groups.includes("admin") || groups.includes("commercial")) {
         router.push("/admin");
       } else {
-        console.log("Redirection vers dashboard");
         router.push("/dashboard");
       }
     }
@@ -51,7 +48,6 @@ export default function LoginPage() {
 
   const onSubmit = async (data: LoginFormValues) => {
     await login(data.username, data.password);
-    console.info("----- connexion réussi -----");
   };
 
   return (
@@ -83,12 +79,12 @@ export default function LoginPage() {
             <div className="grid gap-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Mot de passe</Label>
-                <a
-                  href="#"
+                <Link
+                  href="/mot-de-passe-oublie"
                   className="text-sm text-muted-foreground hover:underline"
                 >
                   Mot de passe oublié ?
-                </a>
+                </Link>
               </div>
               <Input
                 id="password"
