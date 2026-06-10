@@ -3,7 +3,7 @@ import { create } from "zustand";
 import { API_URL } from "@/constants/api";
 
 const initialFilters = {
-  vehicle_type: "sale",
+  vehicle_type: "all",
   brand: "",
   model: "",
   min_price: "",
@@ -49,8 +49,9 @@ export const useVehicleStore = create<VehicleState>()((set, get) => ({
 
     try {
       const params = new URLSearchParams();
-      if (filters.vehicle_type)
+      if (filters.vehicle_type && filters.vehicle_type !== "all") {
         params.append("vehicle_type", filters.vehicle_type);
+      }
       if (filters.brand) params.append("brand", filters.brand);
       if (filters.model) params.append("model", filters.model);
       if (filters.min_price) params.append("min_price", filters.min_price);

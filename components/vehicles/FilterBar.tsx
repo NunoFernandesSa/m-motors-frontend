@@ -44,6 +44,7 @@ export default function FilterBar({
                 <SelectValue placeholder="Type d'offre" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="all">Tous</SelectItem>
                 <SelectItem value="sale">Achat</SelectItem>
                 <SelectItem value="rent">Location LLD</SelectItem>
               </SelectContent>
