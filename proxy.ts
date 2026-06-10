@@ -24,9 +24,10 @@ export async function proxy(request: NextRequest) {
   // 2. Routes protégées (dashboard + backoffice)
   const isDashboard = pathname.startsWith("/dashboard");
   const isBackoffice = pathname.startsWith("/admin");
+  const isDossier = pathname.startsWith("/dossier");
 
   // Pas de token → redirection vers connexion
-  if ((isDashboard || isBackoffice) && !accessToken) {
+  if ((isDashboard || isBackoffice || isDossier) && !accessToken) {
     return NextResponse.redirect(new URL("/connexion", request.url));
   }
 
