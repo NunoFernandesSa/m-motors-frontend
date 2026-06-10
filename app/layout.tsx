@@ -1,14 +1,13 @@
-import { Geist } from "next/font/google";
+import { Geist, Lato } from "next/font/google";
 import "@styles/globals.css";
-import Footer from "@/components/shared/footer/Footer";
 import { Toaster } from "sonner";
 import AuthProvider from "@/components/providers/AuthProvider";
 import { Metadata } from "next";
-import Navbar from "@/components/shared/navbar/Navbar";
 
-const geistSans = Geist({
+const lato = Lato({
+  weight: ["300", "400", "700"],
   subsets: ["latin"],
-  variable: "--font-geist-sans",
+  variable: "--font-lato",
 });
 
 export const metadata: Metadata = {
@@ -22,7 +21,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="fr" className={`${geistSans.variable} h-full antialiased`}>
+    <html lang="fr" className={`${lato.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col font-sans">
         <AuthProvider>
           <Toaster position="top-right" richColors closeButton />
