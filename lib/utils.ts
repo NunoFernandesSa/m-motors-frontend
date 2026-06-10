@@ -8,7 +8,7 @@ export function cn(...inputs: ClassValue[]) {
 
 export const getValidImageUrl = (url: string | undefined | null): string => {
   if (!url || typeof url !== "string" || url.trim() === "") {
-    return "/images/placeholder-car.jpg";
+    return "/images/placeholder-car.png";
   }
   if (url.startsWith("http://") || url.startsWith("https://")) {
     return url;

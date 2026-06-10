@@ -22,43 +22,46 @@ export default function VehicleCard({
 
   const offerLabel = vehicle.vehicle_type === "sale" ? "Achat" : "Location LLD";
 
-  // ✅ Correction : accéder à la propriété 'image' de l'objet
   const firstImage = vehicle.images?.[0];
   const rawImageUrl = firstImage?.image || "";
   const imageUrl = getValidImageUrl(rawImageUrl);
 
   return (
-    <Link href={`/catalogue/${vehicle.id}`}>
-      <Card className="h-full overflow-hidden hover:shadow-lg transition-shadow">
-        <div className="relative h-48 w-full bg-muted">
+    <Link href={`/catalogue/${vehicle.id}`} className="block h-full">
+      <Card className="group h-full overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5">
+        {/* Image compacte (ratio 16/9 mais moins haute) */}
+        <div className="relative aspect-video w-full overflow-hidden bg-muted">
           <Image
             src={imageUrl}
             alt={`${vehicle.brand} ${vehicle.model}`}
             fill
-            className="object-cover"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         </div>
 
-        <CardHeader className="p-4 pb-0">
-          <h3 className="text-lg font-bold">
+        <CardHeader className="space-y-0 px-3 pt-2 pb-0">
+          <h3 className="text-base font-bold leading-tight truncate">
             {vehicle.brand} {vehicle.model}
           </h3>
           {vehicle.year && (
-            <p className="text-sm text-muted-foreground">{vehicle.year}</p>
+            <p className="text-xs text-muted-foreground">{vehicle.year}</p>
           )}
         </CardHeader>
 
-        <CardContent className="p-4 pt-2">
-          <p className="text-2xl font-bold text-primary">{displayPrice}</p>
+        <CardContent className="px-3 pt-1 pb-0">
+          <p className="text-lg font-bold text-primary">{displayPrice}</p>
           {vehicle.mileage && (
-            <p className="text-sm">{vehicle.mileage.toLocaleString()} km</p>
+            <p className="text-xs text-muted-foreground">
+              {vehicle.mileage.toLocaleString()} km
+            </p>
           )}
         </CardContent>
 
-        <CardFooter className="p-4 pt-0">
+        <CardFooter className="px-3 pb-2 pt-1">
           <Badge
             variant={vehicle.vehicle_type === "sale" ? "default" : "secondary"}
+            className="rounded-full px-2 py-0 text-xs font-normal"
           >
             {offerLabel}
           </Badge>
