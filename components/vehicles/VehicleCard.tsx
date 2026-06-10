@@ -1,26 +1,22 @@
 "use client";
 
-/**
- * @license: MIT
- * @author: nuno fernandes
- * @Copyright (c) 2026 m-motors. All rights reserved.
- */
-
 import Image from "next/image";
 import Link from "next/link";
 import { JSX } from "react";
 import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { Vehicle } from "@/types";
+import { getValidImageUrl } from "@/lib/utils";
 
 interface VehicleCardProps {
   vehicle: Vehicle;
 }
 
 /**
- * VehicleCard component that displays a vehicle card
- * @param vehicle The vehicle to display
- * @returns {JSX.Element} The rendered VehicleCard component
+ * A React component that renders a card displaying vehicle details, including image, price, and key specifications.
+ * The card is clickable and links to the vehicle's detailed page in the catalogue.
+ * @param {VehicleCardProps} { vehicle } - Props object containing the vehicle data to display
+ * @returns {JSX.Element} A card component with vehicle information wrapped in a navigation link
  */
 export default function VehicleCard({
   vehicle,
@@ -31,7 +27,10 @@ export default function VehicleCard({
       : `${parseInt(vehicle.rent_price || "0").toLocaleString()} € / mois`;
 
   const offerLabel = vehicle.vehicle_type === "sale" ? "Achat" : "Location LLD";
-  const imageUrl = vehicle.images || "/images/placeholder-car.jpg";
+
+  // Récupérer l'URL de la première image du tableau
+  const rawImageUrl = vehicle.images?.[0] || "/images/placeholder-car.jpg";
+  const imageUrl = getValidImageUrl(rawImageUrl);
 
   return (
     <Link href={`/catalogue/${vehicle.id}`}>
