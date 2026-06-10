@@ -2,8 +2,9 @@
 import { Loading } from "@/components/shared/Loading";
 import { ADMIN_NAV_LINKS } from "@/constants/navlinks";
 import { useRoleAccess } from "@/hooks/useRoleAccess";
+import { useAuthStore } from "@/store/authStore"; // à importer
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 interface BackofficeLayoutProps {
   children: React.ReactNode;
@@ -12,6 +13,13 @@ interface BackofficeLayoutProps {
 export default function BackofficeLayout({ children }: BackofficeLayoutProps) {
   const { isLoading } = useRoleAccess(["admin", "commercial"], "/");
   const pathname = usePathname();
+  const { logout } = useAuthStore(); // récupère la fonction logout
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await logout();
+    router.push("/connexion");
+  };
 
   if (isLoading) return <Loading />;
 
@@ -34,6 +42,13 @@ export default function BackofficeLayout({ children }: BackofficeLayoutProps) {
               {item.label}
             </Link>
           ))}
+          {/* Bouton de déconnexion (et non un lien) */}
+          <button
+            onClick={handleLogout}
+            className="block w-full text-left px-3 py-2 rounded-md text-sm transition-colors hover:bg-muted text-red-600"
+          >
+            Déconnexion
+          </button>
         </nav>
       </aside>
 
