@@ -13,7 +13,7 @@ const geistSans = Geist({
 
 export const metadata: Metadata = {
   title: "M-Motors",
-  description: "...",
+  description: "Achat et location de véhicules",
 };
 
 export default function RootLayout({
@@ -26,9 +26,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col font-sans">
         <AuthProvider>
           <Toaster position="top-right" richColors closeButton />
-          <Navbar />
           {children}
-          <Footer />
         </AuthProvider>
       </body>
     </html>
