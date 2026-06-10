@@ -5,36 +5,13 @@ import { useParams, useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
 import { toast } from "sonner";
 import { API_URL } from "@/constants/api";
-
-interface Vehicle {
-  id: number;
-  brand: string;
-  model: string;
-  year: number;
-  price: string;
-  vehicle_type: "sale" | "rent";
-}
-
-interface DocumentFile {
-  id: number;
-  file: string; // URL ou nom
-  uploaded_at: string;
-}
-
-interface Folder {
-  id: number;
-  comment: string;
-  status: string;
-  created_at: string;
-  vehicle_details: Vehicle;
-  document_files: DocumentFile[];
-}
+import { FolderDetails } from "@/types/dashboard-types";
 
 export default function UploadDocumentsPage() {
   const { id } = useParams();
   const { user } = useAuthStore();
   const router = useRouter();
-  const [folder, setFolder] = useState<Folder | null>(null);
+  const [folder, setFolder] = useState<FolderDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [comment, setComment] = useState("");
@@ -53,8 +30,10 @@ export default function UploadDocumentsPage() {
         const data = await res.json();
         setFolder(data);
         setComment(data.comment || "");
-      } catch (err: any) {
-        toast.error(err.message);
+      } catch (err: unknown) {
+        const errorMessage =
+          err instanceof Error ? err.message : "Erreur inconnue";
+        toast.error(errorMessage);
       } finally {
         setLoading(false);
       }
@@ -79,7 +58,7 @@ export default function UploadDocumentsPage() {
     const isRent = vehicle.vehicle_type === "rent";
     const requiredCount = isRent ? 3 : 2;
     const existingCount = folder.document_files?.length || 0;
-    // On vérifie que le total (existants + nouveaux) atteint le requis
+
     if (existingCount + files.length < requiredCount) {
       toast.error(
         `Vous avez actuellement ${existingCount} document(s). Veuillez en ajouter ${requiredCount - existingCount} supplémentaire(s) pour finaliser.`,
@@ -89,7 +68,7 @@ export default function UploadDocumentsPage() {
     setUploading(true);
     try {
       const token = localStorage.getItem("access_token");
-      // Mettre à jour le commentaire
+      // update comment
       await fetch(`${API_URL}/folders/${id}/`, {
         method: "PATCH",
         headers: {
@@ -98,7 +77,7 @@ export default function UploadDocumentsPage() {
         },
         body: JSON.stringify({ comment }),
       });
-      // Upload des nouveaux fichiers
+      // upload new files
       for (const file of files) {
         const formData = new FormData();
         formData.append("file", file);
@@ -120,16 +99,18 @@ export default function UploadDocumentsPage() {
         }
       }
       toast.success("Dossier mis à jour");
-      // Recharger les données pour afficher les nouveaux documents
+      // refresh data to show new documents
       const refreshed = await fetch(`${API_URL}/folders/${id}/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const refreshedData = await refreshed.json();
       setFolder(refreshedData);
-      setFiles([]); // vider la sélection
+      setFiles([]); // clear selection
       toast.success("Documents ajoutés avec succès");
-    } catch (err: any) {
-      toast.error(err.message);
+    } catch (err: unknown) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Erreur inconnue";
+      toast.error(errorMessage);
     } finally {
       setUploading(false);
     }
@@ -164,7 +145,7 @@ export default function UploadDocumentsPage() {
         </p>
       </div>
 
-      {/* Affichage des documents existants */}
+      {/* Show existing documents */}
       <div className="mb-6">
         <h2 className="font-semibold mb-2">Documents déjà fournis</h2>
         {existingDocs.length === 0 ? (

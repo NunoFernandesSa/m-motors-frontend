@@ -5,26 +5,8 @@ import { useAuthStore } from "@/store/authStore";
 import { API_URL } from "@/constants/api";
 import Link from "next/link";
 import { toast } from "sonner";
-
-interface DocumentFile {
-  id: number;
-  file: string;
-  uploaded_at: string;
-}
-
-interface FolderDetails {
-  id: number;
-  comment: string;
-  status: string;
-  created_at: string;
-  vehicle_details: {
-    id: number;
-    brand: string;
-    model: string;
-    vehicle_type: "sale" | "rent";
-  };
-  document_files: DocumentFile[];
-}
+import { Folder } from "@/types/backoffice-types";
+import { FolderDetails } from "@/types/dashboard-types";
 
 export default function MesDossiers() {
   const { user } = useAuthStore();
@@ -42,7 +24,7 @@ export default function MesDossiers() {
       if (!listRes.ok) throw new Error("Erreur chargement liste");
       const data = await listRes.json();
       const foldersList = Array.isArray(data) ? data : data.results || [];
-      const folderIds = foldersList.map((f: any) => f.id);
+      const folderIds = foldersList.map((f: Folder) => f.id);
 
       const foldersDetails = await Promise.all(
         folderIds.map(async (id: number) => {
@@ -54,8 +36,9 @@ export default function MesDossiers() {
         }),
       );
       setFolders(foldersDetails);
-    } catch (err: any) {
-      toast.error(err.message);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -83,8 +66,9 @@ export default function MesDossiers() {
       toast.success("Dossier supprimé");
       // Recharger la liste
       await fetchFolders();
-    } catch (err: any) {
-      toast.error(err.message);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error(message);
     } finally {
       setDeletingId(null);
     }
