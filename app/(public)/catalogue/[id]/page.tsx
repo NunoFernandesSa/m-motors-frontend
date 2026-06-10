@@ -121,7 +121,7 @@ export default function VehicleDetailPage() {
             <button
               className="bg-primary text-primary-foreground px-6 py-2 rounded-md hover:bg-primary/90 transition"
               onClick={() => {
-                router.push(`/dossier/novo`);
+                router.push(`/dossier/new?vehicleId=${id}`);
               }}
             >
               Réserver

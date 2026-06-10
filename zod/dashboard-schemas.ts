@@ -22,22 +22,35 @@ export type PasswordFormValues = z.infer<typeof passwordSchema>;
 /**
  * Schéma de validation pour les dossiers
  */
-export const folderSchema = z
-  .object({
-    vehicle_id: z.number().min(1, "Veuillez sélectionner un véhicule"),
-    type: z.enum(["buy", "rent"]),
-    start_date: z.string().optional(),
-    end_date: z.string().optional(),
-    message: z.string().optional(),
-  })
-  .refine(
-    (data) => {
-      if (data.type === "rent" && (!data.start_date || !data.end_date)) {
-        return false;
-      }
-      return true;
-    },
-    { message: "Dates requises pour la location", path: ["start_date"] },
-  );
+export const baseDossierSchema = z.object({
+  comment: z.string().optional(),
+});
 
-export type FolderFormValues = z.infer<typeof folderSchema>;
+// Schéma pour la location (tous les fichiers sont requis)
+export const rentDossierSchema = z.object({
+  comment: z.string().optional(),
+  driver_license: z.instanceof(File, {
+    message: "Le permis de conduire est obligatoire",
+  }),
+  proof_of_income: z.instanceof(File, {
+    message: "Le justificatif de revenus est obligatoire",
+  }),
+  rib: z.instanceof(File, { message: "Le RIB est obligatoire" }),
+});
+
+// Schéma pour l'achat (identité et justificatif requis, certificat optionnel)
+export const buyDossierSchema = z.object({
+  comment: z.string().optional(),
+  identity: z.instanceof(File, {
+    message: "La pièce d'identité est obligatoire",
+  }),
+  proof_of_address: z.instanceof(File, {
+    message: "Le justificatif de domicile est obligatoire",
+  }),
+  certificate: z.instanceof(File).optional(),
+});
+
+// Type union pour les valeurs du formulaire
+export type DossierFormValues =
+  | z.infer<typeof rentDossierSchema>
+  | z.infer<typeof buyDossierSchema>;
