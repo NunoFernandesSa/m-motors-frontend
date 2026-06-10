@@ -20,7 +20,7 @@ type Vehicle = {
   model: string;
   year: number;
   price: number;
-  type: "buy" | "rent";
+  vehicle_type: "sale" | "rent";
 };
 
 export default function NewDossierPage() {
@@ -68,7 +68,10 @@ export default function NewDossierPage() {
       .then((res) => res.json())
       .then((data: Vehicle) => {
         setVehicle(data);
-        setRequestType(data.type === "rent" ? "rent" : "buy");
+        // L'API renvoie vehicle_type = "sale" ou "rent"
+        // On convertit "sale" en "buy" pour notre logique interne
+        const type = data.vehicle_type === "rent" ? "rent" : "buy";
+        setRequestType(type);
         setLoadingVehicle(false);
       })
       .catch(() => setLoadingVehicle(false));
@@ -171,7 +174,7 @@ export default function NewDossierPage() {
 
       for (const file of filesToUpload) {
         const formData = new FormData();
-        formData.append("document", file);
+        formData.append("file", file);
         const uploadRes = await fetch(
           `${API_URL}/folders/${folderId}/documents/`,
           {
