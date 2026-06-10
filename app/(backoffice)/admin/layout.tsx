@@ -24,7 +24,7 @@ export default function BackofficeLayout({
 
   const handleLogout = async () => {
     await logout();
-    router.push("/connexion");
+    router.push("/catalogue");
   };
 
   if (isLoading) return <Loading />;

@@ -2,12 +2,19 @@
 
 import Link from "next/link";
 import { useAuthStore } from "@/store/authStore";
+import { useRouter } from "next/navigation";
 
 export default function Navbar() {
+  const router = useRouter();
   const { user, logout } = useAuthStore();
   const isAdmin =
     (user as unknown as { groups?: string[] })?.groups?.includes("admin") ||
     (user as unknown as { groups?: string[] })?.groups?.includes("commercial");
+
+  const handleLogout = async () => {
+    await logout();
+    router.push("/catalogue");
+  };
 
   return (
     <nav className="border-b bg-white px-4 py-3 shadow-sm">
@@ -40,7 +47,7 @@ export default function Navbar() {
             </>
           ) : (
             <button
-              onClick={logout}
+              onClick={handleLogout}
               className="text-red-600 hover:text-red-800"
             >
               Déconnexion
