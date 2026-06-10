@@ -11,8 +11,8 @@ export const NAV_LINKS = [
   },
 ];
 
-export const BACKOFFICE_NAV_LINKS = [
-  { href: "/backoffice", label: "Dashboard" },
-  { href: "/backoffice/vehicules", label: "Véhicules" },
-  { href: "/backoffice/dossiers", label: "Dossiers" },
+export const ADMIN_NAV_LINKS = [
+  { href: "/admin", label: "Dashboard" },
+  { href: "/admin/vehicules", label: "Véhicules" },
+  { href: "/admin/dossiers", label: "Dossiers" },
 ];

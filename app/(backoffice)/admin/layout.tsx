@@ -1,6 +1,6 @@
 "use client";
 import { Loading } from "@/components/shared/Loading";
-import { BACKOFFICE_NAV_LINKS } from "@/constants/navlinks";
+import { ADMIN_NAV_LINKS } from "@/constants/navlinks";
 import { useRoleAccess } from "@/hooks/useRoleAccess";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -21,7 +21,7 @@ export default function BackofficeLayout({ children }: BackofficeLayoutProps) {
       <aside className="w-64 border-r bg-muted/40 p-4">
         <h2 className="text-lg font-bold mb-4">Backoffice M-motors</h2>
         <nav className="space-y-1">
-          {BACKOFFICE_NAV_LINKS.map((item) => (
+          {ADMIN_NAV_LINKS.map((item) => (
             <Link
               key={item.href}
               href={item.href}

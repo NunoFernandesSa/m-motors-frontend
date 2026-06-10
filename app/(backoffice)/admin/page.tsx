@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export default function AdminDashboard() {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   if (loading) {
@@ -41,10 +41,10 @@ export default function AdminDashboard() {
         <h2 className="text-lg font-semibold mb-4">Actions rapides</h2>
         <div className="flex flex-wrap gap-4">
           <Button asChild>
-            <Link href="/backoffice/vehicles/new">➕ Ajouter un véhicule</Link>
+            <Link href="/admin/vehicules/new">➕ Ajouter un véhicule</Link>
           </Button>
           <Button asChild variant="outline">
-            <Link href="/backoffice/dossiers">📋 Voir tous les dossiers</Link>
+            <Link href="/admin/dossiers">📋 Voir tous les dossiers</Link>
           </Button>
         </div>
       </div>

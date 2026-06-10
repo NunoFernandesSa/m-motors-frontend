@@ -29,7 +29,7 @@ export default function LoginPage() {
       // Redirect based on role
       if (user.role === "admin" || user.role === "commercial") {
         console.log("Redirection vers backoffice");
-        router.push("/backoffice");
+        router.push("/admin");
       } else {
         console.log("Redirection vers dashboard");
         router.push("/dashboard");

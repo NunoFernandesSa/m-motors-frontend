@@ -112,7 +112,7 @@ export function VehicleForm({ vehicle }: VehicleFormProps) {
     setLoading(false);
     if (success) {
       toast.success(vehicle ? "Véhicule modifié" : "Véhicule ajouté");
-      router.push("/backoffice/vehicules");
+      router.push("/admin/vehicules");
     } else {
       toast.error("Erreur lors de l'enregistrement");
     }

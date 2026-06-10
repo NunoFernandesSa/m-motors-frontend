@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Plus, Pencil, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -48,7 +48,7 @@ export default function VehiclesPage() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Gestion des véhicules</h1>
-        <Link href="/backoffice/vehicules/novo">
+        <Link href="/admin/vehicules/new">
           <Button>
             <Plus className="mr-2 h-4 w-4" />
             Ajouter un véhicule
@@ -108,7 +108,7 @@ export default function VehiclesPage() {
                   </p>
                 </div>
                 <div className="flex gap-2">
-                  <Link href={`/backoffice/vehicules/${vehicle.id}`}>
+                  <Link href={`/admin/vehicules/${vehicle.id}`}>
                     <Button variant="outline" size="sm">
                       <Pencil className="h-4 w-4" />
                     </Button>
