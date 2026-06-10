@@ -18,16 +18,8 @@ const logo = "/images/logo.png";
  */
 function Logo() {
   return (
-    <Link href="/" className="flex items-center gap-2 font-bold text-xl">
-      <Image
-        src={logo}
-        alt="M-Motors Logo"
-        width={40}
-        height={40}
-        className="h-8 w-auto"
-        priority
-      />
-      <span className="hidden sm:inline">M-Motors</span>
+    <Link href="/" className="font-bold text-xl text-blue-600">
+      M-Motors
     </Link>
   );
 }
