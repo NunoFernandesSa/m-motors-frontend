@@ -129,17 +129,17 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   logout: async () => {
     set({ isLoading: true });
-    const token = localStorage.getItem("access_token");
-    if (token) {
-      try {
-        await fetch(`${API_URL}/auth/logout/`, {
-          method: "POST",
-          headers: { Authorization: `Bearer ${token}` },
-        });
-      } catch (error) {
-        console.error("Logout API error:", error);
-      }
-    }
+    // const token = localStorage.getItem("access_token");
+    // if (token) {
+    //   try {
+    //     await fetch(`${API_URL}/auth/logout/`, {
+    //       method: "POST",
+    //       headers: { Authorization: `Bearer ${token}` },
+    //     });
+    //   } catch (error) {
+    //     console.error("Logout API error:", error);
+    //   }
+    // }
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
     deleteCookie("access_token");
