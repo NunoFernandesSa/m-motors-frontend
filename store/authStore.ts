@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { API_URL } from "@/constants/api";
 import { AuthState } from "@/types";
 import { deleteCookie, setCookie } from "@/helpers";
+import { jwtDecode } from "jwt-decode";
 
 export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
@@ -96,6 +97,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       return;
     }
 
+    let groups: string[] = [];
+    try {
+      const decoded = jwtDecode<{ groups?: string[]; role?: string }>(token);
+      groups = decoded.groups || (decoded.role ? [decoded.role] : []);
+    } catch (error) {
+      console.error("Erreur décodage token:", error);
+    }
+
     const makeRequest = async (t: string) => {
       return fetch(`${API_URL}/auth/me/`, {
         headers: { Authorization: `Bearer ${t}` },
@@ -108,12 +117,20 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         try {
           const newToken = await get().refreshToken();
           response = await makeRequest(newToken);
+          // Mettre à jour les groupes avec le nouveau token si nécessaire
+          try {
+            const decoded = jwtDecode<{ groups?: string[]; role?: string }>(
+              newToken,
+            );
+            groups = decoded.groups || (decoded.role ? [decoded.role] : []);
+          } catch {}
         } catch (refreshError) {
           throw new Error("Refresh failed");
         }
       }
       if (response.ok) {
         const userData = await response.json();
+        userData.groups = groups;
         set({ user: userData, isAuthenticated: true, isLoading: false });
       } else {
         throw new Error("Invalid token");

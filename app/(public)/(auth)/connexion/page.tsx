@@ -25,7 +25,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (isAuthenticated && user) {
-      const groups = (user as { groups?: string[] })?.groups || [];
+      const groups = (user as any).groups || [];
       if (groups.includes("admin") || groups.includes("commercial")) {
         router.push("/admin");
       } else {
