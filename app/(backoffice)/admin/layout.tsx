@@ -3,17 +3,23 @@ import { Loading } from "@/components/shared/Loading";
 import { ADMIN_NAV_LINKS } from "@/constants/navlinks";
 import { useRoleAccess } from "@/hooks/useRoleAccess";
 import { useAuthStore } from "@/store/authStore"; // à importer
+import { BackofficeLayoutProps } from "@/types/backoffice-types";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { JSX } from "react";
 
-interface BackofficeLayoutProps {
-  children: React.ReactNode;
-}
-
-export default function BackofficeLayout({ children }: BackofficeLayoutProps) {
+/**
+ * Backoffice layout component that provides the admin interface structure
+ * Includes sidebar navigation, authentication checks, and main content area
+ * @param {BackofficeLayoutProps} { children } - React children to render in the main content area
+ * @returns {JSX.Element} The rendered backoffice layout
+ */
+export default function BackofficeLayout({
+  children,
+}: BackofficeLayoutProps): JSX.Element {
   const { isLoading } = useRoleAccess(["admin", "commercial"], "/");
   const pathname = usePathname();
-  const { logout } = useAuthStore(); // récupère la fonction logout
+  const { logout } = useAuthStore();
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -42,7 +48,7 @@ export default function BackofficeLayout({ children }: BackofficeLayoutProps) {
               {item.label}
             </Link>
           ))}
-          {/* Bouton de déconnexion (et non un lien) */}
+          {/* logout button */}
           <button
             onClick={handleLogout}
             className="block w-full text-left px-3 py-2 rounded-md text-sm transition-colors hover:bg-muted text-red-600"

@@ -15,8 +15,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { JSX } from "react";
 
-export default function VehiclesPage() {
+/**
+ * Main page component for managing vehicles in the admin dashboard.
+ * Handles vehicle listing, filtering, searching, and deletion operations.
+ * @returns JSX element rendering the vehicles management interface
+ */
+export default function VehiclesPage(): JSX.Element {
   const { vehicles, loading, fetchAllVehicles, deleteVehicle } =
     useVehicleStore();
   const [search, setSearch] = useState("");
