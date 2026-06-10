@@ -12,12 +12,6 @@ interface VehicleCardProps {
   vehicle: Vehicle;
 }
 
-/**
- * A React component that renders a card displaying vehicle details, including image, price, and key specifications.
- * The card is clickable and links to the vehicle's detailed page in the catalogue.
- * @param {VehicleCardProps} { vehicle } - Props object containing the vehicle data to display
- * @returns {JSX.Element} A card component with vehicle information wrapped in a navigation link
- */
 export default function VehicleCard({
   vehicle,
 }: VehicleCardProps): JSX.Element {
@@ -28,8 +22,9 @@ export default function VehicleCard({
 
   const offerLabel = vehicle.vehicle_type === "sale" ? "Achat" : "Location LLD";
 
-  // Récupérer l'URL de la première image du tableau
-  const rawImageUrl = vehicle.images?.[0] || "/images/placeholder-car.jpg";
+  // ✅ Correction : accéder à la propriété 'image' de l'objet
+  const firstImage = vehicle.images?.[0];
+  const rawImageUrl = firstImage?.image || "";
   const imageUrl = getValidImageUrl(rawImageUrl);
 
   return (

@@ -113,6 +113,15 @@ export const useVehicleStore = create<VehicleState>()((set, get) => ({
   },
 
   addVehicle: async (formData: FormData) => {
+    // !!! Log pour déboguer
+    console.log("=== ADD VEHICLE DEBUG ===");
+    for (const pair of formData.entries()) {
+      console.log(
+        pair[0],
+        pair[1] instanceof File ? `FILE: ${pair[1].name}` : pair[1],
+      );
+    }
+
     set({ loading: true, error: null });
     const token = localStorage.getItem("access_token");
     try {
@@ -132,6 +141,15 @@ export const useVehicleStore = create<VehicleState>()((set, get) => ({
   },
 
   updateVehicle: async (id: number, formData: FormData) => {
+    // !!! Log pour déboguer
+    console.log("=== UPDATE VEHICLE DEBUG ===");
+    for (const pair of formData.entries()) {
+      console.log(
+        pair[0],
+        pair[1] instanceof File ? `FILE: ${pair[1].name}` : pair[1],
+      );
+    }
+
     set({ loading: true, error: null });
     const token = localStorage.getItem("access_token");
     try {

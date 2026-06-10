@@ -141,12 +141,7 @@ export default function VehicleDetailPage() {
         {/* Galerie d'images (carrousel) */}
         <div className="w-full">
           <ImageGallery
-            images={images.map((url, index) => ({
-              id: index,
-              image: url,
-              order: index,
-              url,
-            }))}
+            images={vehicleDetail.images || []}
             vehicleName={`${vehicleDetail.brand} ${vehicleDetail.model}`}
           />
         </div>

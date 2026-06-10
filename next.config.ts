@@ -5,26 +5,13 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/api/:path*",
-        destination: "http://localhost:8000/api/:path*", // backend Django
+        destination: "http://localhost:8000/api/:path*",
       },
     ];
   },
-  /* config options here */
   images: {
-    remotePatterns: [
-      {
-        protocol: "http",
-        hostname: "localhost",
-        port: "8000",
-        pathname: "/media/**",
-      },
-      {
-        protocol: "http",
-        hostname: "127.0.0.1",
-        port: "8000",
-        pathname: "/media/**",
-      },
-    ],
+    // Désactive complètement l'optimisation des images
+    unoptimized: true,
   },
 };
 

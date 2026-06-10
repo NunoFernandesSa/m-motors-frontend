@@ -88,6 +88,13 @@ export function VehicleForm({ vehicle }: VehicleFormProps) {
   };
 
   const onSubmit = async (data: VehicleFormValues) => {
+    //!!! Log pour déboguer
+    console.log("=== FORM DATA DEBUG ===");
+    console.log("Nombre d'images:", imageFiles.length);
+    for (let i = 0; i < imageFiles.length; i++) {
+      console.log(`Image ${i}:`, imageFiles[i].name, imageFiles[i].size);
+    }
+
     setLoading(true);
     const formData = new FormData();
     formData.append("brand", data.brand);
@@ -99,15 +106,25 @@ export function VehicleForm({ vehicle }: VehicleFormProps) {
     formData.append("color", data.color);
     if (data.description) formData.append("description", data.description);
     formData.append("vehicle_type", data.vehicle_type);
-    if (data.sale_price) formData.append("sale_price", data.sale_price);
-    if (data.rent_price) formData.append("rent_price", data.rent_price);
-    if (data.rent_duration_min)
-      formData.append("rent_duration_min", data.rent_duration_min.toString());
     formData.append("is_available", String(data.is_available));
+
+    if (data.vehicle_type === "sale") {
+      if (data.sale_price) formData.append("sale_price", data.sale_price);
+    } else {
+      if (data.rent_price) formData.append("rent_price", data.rent_price);
+      if (data.rent_duration_min)
+        formData.append("rent_duration_min", data.rent_duration_min.toString());
+    }
 
     // Add images to FormData
     for (const file of imageFiles) {
       formData.append("uploaded_images", file);
+    }
+
+    //!!! Log pour déboguer
+    console.log("FormData entries:");
+    for (const pair of formData.entries()) {
+      console.log(pair[0], pair[1]);
     }
 
     let success = false;
