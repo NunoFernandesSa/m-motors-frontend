@@ -148,13 +148,31 @@ export default function VehicleDetailPage() {
 
         {/* Informations */}
         <div className="space-y-4">
-          <h1 className="text-3xl font-bold">
+          <h2 className="text-3xl font-bold">
             {vehicleDetail.brand} {vehicleDetail.model}
-          </h1>
+          </h2>
 
           {vehicleDetail.year && (
             <p className="text-muted-foreground">
               Année : {vehicleDetail.year}
+            </p>
+          )}
+
+          {vehicleDetail.fuel_type && (
+            <p className="text-muted-foreground">
+              Type de carburant : {vehicleDetail.fuel_type}
+            </p>
+          )}
+
+          {vehicleDetail.color && (
+            <p className="text-muted-foreground">
+              Couleur : {vehicleDetail.color}
+            </p>
+          )}
+
+          {vehicleDetail.transmission && (
+            <p className="text-muted-foreground">
+              Type de transmission : {vehicleDetail.transmission}
             </p>
           )}
 

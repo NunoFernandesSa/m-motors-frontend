@@ -3,14 +3,24 @@
 import useEmblaCarousel from "embla-carousel-react";
 import Image from "next/image";
 
-export default function ImageGallery({ images, vehicleName }) {
+export default function ImageGallery({
+  images,
+  vehicleName,
+}: {
+  images: string[];
+  vehicleName: string;
+}) {
   const [emblaRef] = useEmblaCarousel({ loop: true });
 
   if (!images || images.length === 0) {
     return (
-      <div className="bg-gray-200 h-64 rounded flex items-center justify-center">
-        Aucune image
-      </div>
+      <Image
+        src="/images/placeholder-car.png"
+        alt="Aucune image"
+        width={800}
+        height={500}
+        className="w-full h-100 object-cover"
+      />
     );
   }
 
