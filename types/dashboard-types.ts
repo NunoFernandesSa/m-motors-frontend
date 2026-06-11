@@ -7,6 +7,7 @@ interface DocumentFile {
 export interface FolderDetails {
   id: number;
   comment: string;
+  validation_comment: string;
   status: string;
   created_at: string;
   vehicle_details: {

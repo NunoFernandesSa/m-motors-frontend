@@ -129,9 +129,9 @@ export default function UploadDocumentsPage() {
 
   return (
     <div className="container max-w-2xl py-8">
-      <h1 className="text-2xl font-bold mb-6">
+      <h2 className="text-2xl font-bold mb-6">
         Dossier - {vehicle.brand} {vehicle.model}
-      </h1>
+      </h2>
       <div className="bg-gray-50 p-4 rounded mb-6">
         <p className="text-sm text-gray-600">
           Type : {isRent ? "Location" : "Achat"} - Statut :{" "}
@@ -143,6 +143,12 @@ export default function UploadDocumentsPage() {
             <span className="text-red-500 ml-2">(manquants)</span>
           )}
         </p>
+        {folder.status === "rejected" && folder.validation_comment && (
+          <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded text-sm">
+            <p className="font-semibold text-red-700">Motif du refus :</p>
+            <p className="text-red-600">{folder.validation_comment}</p>
+          </div>
+        )}
       </div>
 
       {/* Show existing documents */}
