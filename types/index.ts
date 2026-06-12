@@ -25,7 +25,13 @@ export interface Vehicle {
   transmission: string;
   color: string;
   description: string;
-  images?: string[];
+  images?: {
+    id: number;
+    image: string;
+    order: number;
+    created_at: string;
+    updated_at: string;
+  }[];
   vehicle_type: "sale" | "rent";
   sale_price?: string;
   rent_price?: string;
@@ -143,7 +149,15 @@ export interface Vehicle {
   vehicle_type: "sale" | "rent";
   sale_price?: string;
   rent_price?: string;
-  images?: string[];
+  images?:
+    | {
+        id: number;
+        image: string;
+        order: number;
+        created_at: string;
+        updated_at: string;
+      }[]
+    | undefined;
 }
 
 /**
