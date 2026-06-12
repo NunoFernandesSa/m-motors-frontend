@@ -19,6 +19,14 @@ export interface FolderDetails {
   document_files: DocumentFile[];
 }
 
+export interface FolderStats {
+  total: number;
+  pending: number;
+  approved: number;
+  rejected: number;
+  unreadCount: number;
+}
+
 export interface Vehicle {
   id: number;
   brand: string;
