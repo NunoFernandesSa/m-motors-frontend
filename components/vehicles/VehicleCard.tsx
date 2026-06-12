@@ -1,13 +1,24 @@
 "use client";
 
+/**
+ * @license: MIT
+ * @author: nuno fernandes
+ * @Copyright (c) 2026 m-motors. All rights reserved.
+ */
+
+// ----- React/Next -----
 import Image from "next/image";
 import Link from "next/link";
 import { JSX } from "react";
+// ----- Components -----
 import { Card, CardContent, CardHeader } from "../ui/card";
 import { Badge } from "../ui/badge";
+// ----- Types -----
 import { Vehicle } from "@/types";
+// ----- Utils -----
 import { getValidImageUrl } from "@/lib/utils";
 
+// ----- Props -----
 interface VehicleCardProps {
   vehicle: Vehicle;
 }

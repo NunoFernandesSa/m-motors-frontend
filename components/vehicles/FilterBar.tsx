@@ -1,6 +1,16 @@
 "use client";
 
+/**
+ * @license: MIT
+ * @author: nuno fernandes
+ * @Copyright (c) 2026 m-motors. All rights reserved.
+ */
+
+// ---- React/Next ----
 import { JSX } from "react";
+// ---- Types ----
+import { FilterBarProps } from "@/types";
+// ---- Components ----
 import { Label } from "../ui/label";
 import {
   Select,
@@ -11,7 +21,6 @@ import {
 } from "../ui/select";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { FilterBarProps } from "@/types";
 import { Card } from "../ui/card";
 
 /**

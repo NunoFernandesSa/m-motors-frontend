@@ -1,27 +1,29 @@
 "use client";
 
+/**
+ * @license: MIT
+ * @author: nuno fernandes
+ * @Copyright (c) 2026 m-motors. All rights reserved.
+ */
+
 import useEmblaCarousel from "embla-carousel-react";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, JSX } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { API_URL } from "@/constants/api";
+import { ImageGalleryProps } from "@/types/images-types";
 
-interface ImageItem {
-  id?: number;
-  image: string;
-  order?: number;
-  created_at?: string;
-}
-
-interface ImageGalleryProps {
-  images: ImageItem[] | string[];
-  vehicleName: string;
-}
-
+/**
+ * Image gallery component for displaying vehicle images.
+ * @param param0
+ * @param param0.images - Array of image items or strings
+ * @param param0.vehicleName - Name of the vehicle
+ * @returns JSX.Element - Image gallery component
+ */
 export default function ImageGallery({
   images,
   vehicleName,
-}: ImageGalleryProps) {
+}: ImageGalleryProps): JSX.Element {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
   const [canPrev, setCanPrev] = useState(false);
   const [canNext, setCanNext] = useState(false);

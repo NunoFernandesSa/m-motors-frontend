@@ -35,3 +35,11 @@ export interface Vehicle {
   price: string;
   vehicle_type: "sale" | "rent";
 }
+
+export interface FileButtonProps {
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  accept: string;
+  label: string;
+  fileName: string;
+  error: string;
+}

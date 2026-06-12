@@ -1,8 +1,20 @@
 "use client";
 
-import { useState } from "react";
+/**
+ * @license: MIT
+ * @author: nuno fernandes
+ * @Copyright (c) 2026 m-motors. All rights reserved.
+ */
+
+// ----- React/Next -----
+import { JSX, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+// ----- Zod -----
 import { zodResolver } from "@hookform/resolvers/zod";
+import { VehicleFormValues, vehicleSchema } from "@/zod/backoffice-schemas";
+// ----- Components -----
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,18 +29,23 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+// ----- Types -----
 import { Vehicle } from "@/types";
+// ----- Store Zustand -----
 import { useVehicleStore } from "@/store/vehicleStore";
-import { VehicleFormValues, vehicleSchema } from "@/zod/backoffice-schemas";
-import Image from "next/image";
+// ----- Constants -----
 import { API_URL } from "@/constants/api";
 
-interface VehicleFormProps {
+export interface VehicleFormProps {
   vehicle?: Vehicle;
 }
 
-export function VehicleForm({ vehicle }: VehicleFormProps) {
+/**
+ * Vehicle form component for creating or updating vehicle records.
+ * @param props - VehicleFormProps object containing the component's properties.
+ * @returns JSX.Element - The rendered vehicle form component.
+ * */
+export function VehicleForm({ vehicle }: VehicleFormProps): JSX.Element {
   const router = useRouter();
   const { addVehicle, updateVehicle } = useVehicleStore();
   const [loading, setLoading] = useState(false);

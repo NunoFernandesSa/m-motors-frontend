@@ -1,18 +1,24 @@
-interface FileButtonProps {
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  accept: string;
-  label: string;
-  fileName: string;
-  error: string;
-}
+/**
+ * @license: MIT
+ * @author: nuno fernandes
+ * @Copyright (c) 2026 m-motors. All rights reserved.
+ */
 
+import { FileButtonProps } from "@/types/dashboard-types";
+import { JSX } from "react";
+
+/**
+ * File button component for uploading files.
+ * @param props - FileButtonProps object containing the component's properties.
+ * @returns JSX.Element - The rendered file button component.
+ * */
 const FileButton = ({
   onChange,
   accept,
   label,
   fileName,
   error,
-}: FileButtonProps) => (
+}: FileButtonProps): JSX.Element => (
   <div className="mb-3">
     <label className="block font-medium mb-1">{label} *</label>
     <div className="flex items-center gap-3">

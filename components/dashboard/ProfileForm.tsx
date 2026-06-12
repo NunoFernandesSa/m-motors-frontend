@@ -1,9 +1,14 @@
 "use client";
 
-import { useState } from "react";
+/**
+ * @license: MIT
+ * @author: nuno fernandes
+ * @Copyright (c) 2026 m-motors. All rights reserved.
+ */
+
+import { JSX, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,7 +23,13 @@ import {
   profileSchema,
 } from "@/zod/dashboard-schemas";
 
-export function ProfileForm({ user }: { user: User }) {
+/**
+ * Profile form component for updating user profile.
+ * @param param0
+ * @param param0.user - User object
+ * @returns JSX.Element - Profile form component
+ */
+export function ProfileForm({ user }: { user: User }): JSX.Element {
   const { logout } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
   const [isPasswordLoading, setIsPasswordLoading] = useState(false);
@@ -55,7 +66,7 @@ export function ProfileForm({ user }: { user: User }) {
       });
       if (!res.ok) throw new Error("Erreur lors de la mise à jour");
       toast.success("Profil mis à jour");
-      // Recharger l'utilisateur
+      // Reload user profile
       useAuthStore.getState().fetchUser();
     } catch (error) {
       toast.error("Erreur");
@@ -83,8 +94,9 @@ export function ProfileForm({ user }: { user: User }) {
       toast.success("Mot de passe changé, veuillez vous reconnecter");
       reset();
       setTimeout(() => logout(), 2000);
-    } catch (error) {
-      toast.error("Échec du changement de mot de passe");
+    } catch (error: unknown) {
+      const errMsg = error instanceof Error ? error.message : "Erreur";
+      toast.error(errMsg);
     } finally {
       setIsPasswordLoading(false);
     }
@@ -92,6 +104,7 @@ export function ProfileForm({ user }: { user: User }) {
 
   return (
     <div className="space-y-8">
+      {/* Profile form for updating user profile */}
       <form onSubmit={handleSubmit(onProfileSubmit)} className="space-y-4">
         <div>
           <Label htmlFor="username">Nom d&apos;utilisateur</Label>
@@ -112,6 +125,7 @@ export function ProfileForm({ user }: { user: User }) {
         </Button>
       </form>
 
+      {/* Password form */}
       <form
         onSubmit={handlePasswordSubmit(onPasswordSubmit)}
         className="space-y-4"
@@ -158,6 +172,7 @@ export function ProfileForm({ user }: { user: User }) {
             </p>
           )}
         </div>
+
         <Button type="submit" disabled={isPasswordLoading}>
           {isPasswordLoading ? "Changement..." : "Changer le mot de passe"}
         </Button>
