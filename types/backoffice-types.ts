@@ -15,7 +15,14 @@ export interface DocumentFile {
 
 export interface Folder {
   id: number;
-  user_details: { id: number; username: string; email: string };
+  full_name?: string;
+  phone?: string;
+  address?: string;
+  user_details: {
+    id: number;
+    username: string;
+    email: string;
+  };
   vehicle_details: {
     id: number;
     brand: string;

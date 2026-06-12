@@ -6,7 +6,26 @@ import { useAuthStore } from "@/store/authStore";
 import { toast } from "sonner";
 import { API_URL } from "@/constants/api";
 import { FolderDetails } from "@/types/dashboard-types";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { UpdateFolderForm, updateFolderSchema } from "@/zod/dashboard-schemas";
 
+/**
+ * Page component for uploading required documents to complete a vehicle purchase or rental folder.
+ * Handles folder data fetching, form submission for user details, and multi-file document uploads.
+ * Validates that the minimum required number of documents are submitted based on vehicle type (purchase vs rental).
+ *
+ * @param id - The ID of the folder to upload documents to.
+ * @returns user - The current authenticated user.
+ * @returns router - The router instance for navigation.
+ * @returns folder - The folder details object.
+ * @returns loading - The loading state of the page.
+ * @returns uploading - The uploading state of the page.
+ * @returns files - The selected files for upload.
+ * @returns errors - The form validation errors.
+ * @returns onSubmit - The form submission handler.
+ * @returns handleFileChange - The file change handler for the document input.
+ */
 export default function UploadDocumentsPage() {
   const { id } = useParams();
   const { user } = useAuthStore();
@@ -14,11 +33,22 @@ export default function UploadDocumentsPage() {
   const [folder, setFolder] = useState<FolderDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
-  const [comment, setComment] = useState("");
   const [files, setFiles] = useState<File[]>([]);
-  const [fullName, setFullName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState("");
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm<UpdateFolderForm>({
+    resolver: zodResolver(updateFolderSchema),
+    defaultValues: {
+      fullName: "",
+      phone: "",
+      address: "",
+      comment: "",
+    },
+  });
 
   useEffect(() => {
     if (!id) return;
@@ -32,7 +62,11 @@ export default function UploadDocumentsPage() {
         if (!res.ok) throw new Error("Dossier non trouvé");
         const data = await res.json();
         setFolder(data);
-        setComment(data.comment || "");
+        // if data exists, fill form with it
+        if (data.full_name) setValue("fullName", data.full_name);
+        if (data.phone) setValue("phone", data.phone);
+        if (data.address) setValue("address", data.address);
+        if (data.comment) setValue("comment", data.comment);
       } catch (err: unknown) {
         const errorMessage =
           err instanceof Error ? err.message : "Erreur inconnue";
@@ -42,7 +76,7 @@ export default function UploadDocumentsPage() {
       }
     };
     fetchData();
-  }, [id]);
+  }, [id, setValue]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -50,8 +84,7 @@ export default function UploadDocumentsPage() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (data: UpdateFolderForm) => {
     if (!folder) return;
     const vehicle = folder.vehicle_details;
     if (!vehicle) {
@@ -69,34 +102,25 @@ export default function UploadDocumentsPage() {
       return;
     }
 
-    if (!fullName.trim()) {
-      toast.error("Veuillez saisir votre nom complet");
-      return;
-    }
-    if (!phone.trim()) {
-      toast.error("Veuillez saisir votre numéro de téléphone");
-      return;
-    }
-    if (!address.trim()) {
-      toast.error("Veuillez saisir votre adresse");
-      return;
-    }
-
     setUploading(true);
     try {
       const token = localStorage.getItem("access_token");
-
-      // update comment
+      // Update folder info (full_name, phone, address, comment)
       await fetch(`${API_URL}/folders/${id}/`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ comment }),
+        body: JSON.stringify({
+          full_name: data.fullName,
+          phone: data.phone,
+          address: data.address,
+          comment: data.comment,
+        }),
       });
 
-      // upload new files
+      // Upload new files
       for (const file of files) {
         const formData = new FormData();
         formData.append("file", file);
@@ -117,16 +141,15 @@ export default function UploadDocumentsPage() {
           throw new Error(errorMsg);
         }
       }
-      toast.success("Dossier mis à jour");
 
-      // refresh data to show new documents
+      toast.success("Dossier mis à jour avec succès");
+      // Refresh folder data
       const refreshed = await fetch(`${API_URL}/folders/${id}/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const refreshedData = await refreshed.json();
       setFolder(refreshedData);
-      setFiles([]); // clear selection
-      toast.success("Documents ajoutés avec succès");
+      setFiles([]);
     } catch (err: unknown) {
       const errorMessage =
         err instanceof Error ? err.message : "Erreur inconnue";
@@ -171,7 +194,7 @@ export default function UploadDocumentsPage() {
         )}
       </div>
 
-      {/* Show existing documents */}
+      {/* Existing documents list */}
       <div className="mb-6">
         <h2 className="font-semibold mb-2">Documents déjà fournis</h2>
         {existingDocs.length === 0 ? (
@@ -201,38 +224,48 @@ export default function UploadDocumentsPage() {
         )}
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <div>
           <label className="block font-medium mb-1">Nom complet *</label>
           <input
             type="text"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            required
+            {...register("fullName")}
             className="w-full border rounded p-2"
             placeholder="Votre nom et prénom"
           />
+          {errors.fullName && (
+            <p className="text-red-500 text-sm mt-1">
+              {errors.fullName.message}
+            </p>
+          )}
         </div>
+
         <div>
           <label className="block font-medium mb-1">Téléphone *</label>
           <input
             type="tel"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            required
+            {...register("phone")}
             className="w-full border rounded p-2"
             placeholder="06 12 34 56 78"
           />
+          {errors.phone && (
+            <p className="text-red-500 text-sm mt-1">{errors.phone.message}</p>
+          )}
         </div>
+
         <div>
           <label className="block font-medium mb-1">Adresse (optionnel)</label>
           <textarea
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
+            {...register("address")}
             rows={2}
             className="w-full border rounded p-2"
             placeholder="Votre adresse complète"
           />
+          {errors.address && (
+            <p className="text-red-500 text-sm mt-1">
+              {errors.address.message}
+            </p>
+          )}
         </div>
 
         <div>
@@ -240,12 +273,16 @@ export default function UploadDocumentsPage() {
             Message / commentaire (optionnel)
           </label>
           <textarea
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
+            {...register("comment")}
             rows={3}
             className="w-full border rounded p-2"
             placeholder="Informations complémentaires..."
           />
+          {errors.comment && (
+            <p className="text-red-500 text-sm mt-1">
+              {errors.comment.message}
+            </p>
+          )}
         </div>
 
         <div className="space-y-3 border-t pt-4">

@@ -1,7 +1,7 @@
 "use client";
 
 import { JSX, useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { API_URL } from "@/constants/api";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -13,8 +13,10 @@ import { ArrowLeft, CheckCircle, XCircle, FileText } from "lucide-react";
 import { Folder } from "@/types/backoffice-types";
 
 /**
- * Admin page for viewing and managing a specific folder.
- * @returns JSX element rendering the folder detail interface
+ * Admin folder detail page component that displays comprehensive information about a specific user submission folder,
+ * including client details, vehicle information, uploaded documents, and provides validation functionality for pending folders.
+ * Handles fetching folder data, processing approval/rejection actions, and rendering all folder-related content in a responsive layout.
+ * @returns {JSX.Element} The rendered admin folder detail page UI
  */
 export default function AdminFolderDetailPage(): JSX.Element {
   const { id } = useParams();
@@ -45,21 +47,24 @@ export default function AdminFolderDetailPage(): JSX.Element {
   }, [id]);
 
   const handleValidate = async (newStatus: "approved" | "rejected") => {
-    // Obligation de commentaire pour le refus
     if (newStatus === "rejected" && !validationComment.trim()) {
       setRefuseError("Un commentaire est obligatoire pour refuser le dossier.");
       return;
     }
+
     setRefuseError("");
     setActionLoading(true);
+
     try {
       const token = localStorage.getItem("access_token");
       const payload: { status: string; comment?: string } = {
         status: newStatus,
       };
+
       if (validationComment.trim()) {
         payload.comment = validationComment.trim();
       }
+
       const res = await fetch(`${API_URL}/folders/${id}/validate/`, {
         method: "PATCH",
         headers: {
@@ -68,8 +73,10 @@ export default function AdminFolderDetailPage(): JSX.Element {
         },
         body: JSON.stringify(payload),
       });
+
       const responseText = await res.text();
       let data = null;
+
       try {
         data = JSON.parse(responseText);
       } catch {}
@@ -78,14 +85,17 @@ export default function AdminFolderDetailPage(): JSX.Element {
           data?.detail || data?.error || responseText || "Erreur",
         );
       }
+
       toast.success(
         `Dossier ${newStatus === "approved" ? "validé" : "refusé"} avec succès`,
       );
-      // Recharger le dossier après mise à jour
+
+      // reload folder data after validation
       const refreshed = await fetch(`${API_URL}/folders/${id}/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const refreshedData = await refreshed.json();
+
       setFolder(refreshedData);
       setValidationComment("");
     } catch (err: unknown) {
@@ -140,15 +150,32 @@ export default function AdminFolderDetailPage(): JSX.Element {
           </CardHeader>
           <CardContent className="space-y-2">
             <p>
-              <span className="font-medium">Nom :</span>{" "}
+              <span className="font-medium">Nom d&apos;utilisateur :</span>{" "}
               {folder.user_details.username}
             </p>
             <p>
               <span className="font-medium">Email :</span>{" "}
               {folder.user_details.email}
             </p>
+            {/* Informations supplémentaires saisies par le client */}
+            {folder.full_name && (
+              <p>
+                <span className="font-medium">Nom complet :</span>{" "}
+                {folder.full_name}
+              </p>
+            )}
+            {folder.phone && (
+              <p>
+                <span className="font-medium">Téléphone :</span> {folder.phone}
+              </p>
+            )}
+            {folder.address && (
+              <p>
+                <span className="font-medium">Adresse :</span> {folder.address}
+              </p>
+            )}
             <p>
-              <span className="font-medium">Date :</span>{" "}
+              <span className="font-medium">Date de création :</span>{" "}
               {new Date(folder.created_at).toLocaleString()}
             </p>
             {folder.comment && (

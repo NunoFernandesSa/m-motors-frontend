@@ -16,9 +16,6 @@ export const passwordSchema = z
     path: ["confirm_password"],
   });
 
-export type ProfileFormValues = z.infer<typeof profileSchema>;
-export type PasswordFormValues = z.infer<typeof passwordSchema>;
-
 /**
  * Schéma de validation pour les dossiers
  */
@@ -50,6 +47,16 @@ export const buyDossierSchema = z.object({
   certificate: z.instanceof(File).optional(),
 });
 
+export const updateFolderSchema = z.object({
+  fullName: z.string().min(2, "Nom complet requis (minimum 2 caractères)"),
+  phone: z.string().regex(/^[0-9+\s]{10,}$/, "Numéro de téléphone invalide"),
+  address: z.string().optional(),
+  comment: z.string().optional(),
+});
+
+export type ProfileFormValues = z.infer<typeof profileSchema>;
+export type PasswordFormValues = z.infer<typeof passwordSchema>;
+export type UpdateFolderForm = z.infer<typeof updateFolderSchema>;
 // Type union pour les valeurs du formulaire
 export type DossierFormValues =
   | z.infer<typeof rentDossierSchema>
