@@ -16,6 +16,9 @@ export default function UploadDocumentsPage() {
   const [uploading, setUploading] = useState(false);
   const [comment, setComment] = useState("");
   const [files, setFiles] = useState<File[]>([]);
+  const [fullName, setFullName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
 
   useEffect(() => {
     if (!id) return;
@@ -65,9 +68,24 @@ export default function UploadDocumentsPage() {
       );
       return;
     }
+
+    if (!fullName.trim()) {
+      toast.error("Veuillez saisir votre nom complet");
+      return;
+    }
+    if (!phone.trim()) {
+      toast.error("Veuillez saisir votre numéro de téléphone");
+      return;
+    }
+    if (!address.trim()) {
+      toast.error("Veuillez saisir votre adresse");
+      return;
+    }
+
     setUploading(true);
     try {
       const token = localStorage.getItem("access_token");
+
       // update comment
       await fetch(`${API_URL}/folders/${id}/`, {
         method: "PATCH",
@@ -77,6 +95,7 @@ export default function UploadDocumentsPage() {
         },
         body: JSON.stringify({ comment }),
       });
+
       // upload new files
       for (const file of files) {
         const formData = new FormData();
@@ -99,6 +118,7 @@ export default function UploadDocumentsPage() {
         }
       }
       toast.success("Dossier mis à jour");
+
       // refresh data to show new documents
       const refreshed = await fetch(`${API_URL}/folders/${id}/`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -183,6 +203,39 @@ export default function UploadDocumentsPage() {
 
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
+          <label className="block font-medium mb-1">Nom complet *</label>
+          <input
+            type="text"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            required
+            className="w-full border rounded p-2"
+            placeholder="Votre nom et prénom"
+          />
+        </div>
+        <div>
+          <label className="block font-medium mb-1">Téléphone *</label>
+          <input
+            type="tel"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            required
+            className="w-full border rounded p-2"
+            placeholder="06 12 34 56 78"
+          />
+        </div>
+        <div>
+          <label className="block font-medium mb-1">Adresse (optionnel)</label>
+          <textarea
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+            rows={2}
+            className="w-full border rounded p-2"
+            placeholder="Votre adresse complète"
+          />
+        </div>
+
+        <div>
           <label className="block font-medium mb-1">
             Message / commentaire (optionnel)
           </label>
@@ -235,7 +288,7 @@ export default function UploadDocumentsPage() {
             disabled={uploading}
             className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
           >
-            {uploading ? "Envoi en cours..." : "Ajouter les documents"}
+            {uploading ? "Envoi en cours..." : "Envoyer les documents"}
           </button>
           <button
             type="button"
