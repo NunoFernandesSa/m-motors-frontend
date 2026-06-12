@@ -4,6 +4,7 @@ import { useEffect, useCallback, useRef } from "react";
 import FilterBar from "@/components/vehicles/FilterBar";
 import VehicleCard from "@/components/vehicles/VehicleCard";
 import { useVehicleStore } from "@/store/vehicleStore";
+import WhyUsSection from "@/components/shared/WhyUsSection";
 
 const CataloguePage = () => {
   const {
@@ -65,7 +66,12 @@ const CataloguePage = () => {
 
   return (
     <div className="container mx-auto p-4 space-y-6">
-      <h1 className="text-2xl font-bold">Nos véhicules</h1>
+      <WhyUsSection />
+
+      <h1 className="text-2xl font-bold">Notre sélection</h1>
+      <p className="text-muted-foreground">
+        Des véhicules d&apos;exception, à acheter ou à louer
+      </p>
 
       <FilterBar
         filters={filters}
