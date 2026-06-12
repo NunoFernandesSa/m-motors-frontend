@@ -35,6 +35,7 @@ export interface Vehicle {
   updated_at: string;
   price?: string;
 }
+
 export interface VehicleState {
   vehicles: Vehicle[];
   totalCount: number;
