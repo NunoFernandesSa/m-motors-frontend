@@ -1,14 +1,17 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+/**
+ * @license: MIT
+ * @author: nuno fernandes
+ * @Copyright (c) 2026 m-motors. All rights reserved.
+ */
 
-interface LoadingProps {
-  size?: "sm" | "md" | "lg" | "xl";
-  variant?: "spinner" | "skeleton" | "dots" | "pulse";
-  fullScreen?: boolean;
-  text?: string;
-  className?: string;
-}
+// ----- React/Next -----
+import { JSX } from "react";
+// ----- Utils -----
+import { cn } from "@/lib/utils";
+// ----- Types -----
+import { LoadingProps } from "@/types";
 
 const sizeClasses = {
   sm: "h-4 w-4 border-2",
@@ -17,13 +20,18 @@ const sizeClasses = {
   xl: "h-16 w-16 border-4",
 };
 
+/**
+ * Loading Component
+ * @description Loading Component
+ * @returns JSX.Element - Loading Component
+ */
 export function Loading({
   size = "md",
   variant = "spinner",
   fullScreen = false,
   text,
   className,
-}: LoadingProps) {
+}: LoadingProps): JSX.Element {
   const content = () => {
     switch (variant) {
       case "spinner":

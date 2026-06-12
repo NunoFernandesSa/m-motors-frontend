@@ -144,3 +144,15 @@ export interface Vehicle {
   rent_price?: string;
   images?: string[];
 }
+
+/**
+ * ----- Loading Component -----
+ * Interface représents a loading component
+ */
+export interface LoadingProps {
+  size?: "sm" | "md" | "lg" | "xl";
+  variant?: "spinner" | "skeleton" | "dots" | "pulse";
+  fullScreen?: boolean;
+  text?: string;
+  className?: string;
+}
