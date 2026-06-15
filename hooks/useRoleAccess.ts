@@ -6,5 +6,14 @@ export function useRoleAccess(
   const { user, isAuthenticated, isLoading } = useAuthStore();
   const isAuthorized =
     !isLoading && isAuthenticated && user && allowedRoles.includes(user.role);
+
+  console.log("🔑 useRoleAccess:", {
+    allowedRoles,
+    userRole: user?.role,
+    isLoading,
+    isAuthenticated,
+    isAuthorized,
+  });
+
   return { isLoading, isAuthenticated, user, isAuthorized };
 }

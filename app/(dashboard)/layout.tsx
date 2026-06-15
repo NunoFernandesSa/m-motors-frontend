@@ -9,20 +9,36 @@ import { Loading } from "@/components/shared/Loading";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
-  const { isLoading, isAuthenticated } = useRoleAccess([
+  const { isLoading, isAuthenticated, isAuthorized } = useRoleAccess([
     "admin",
     "commercial",
     "user",
   ]);
 
+  console.log("📊 DashboardLayout render:", {
+    isLoading,
+    isAuthenticated,
+    isAuthorized,
+  });
+
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      router.push("/connexion");
+    console.log("📊 DashboardLayout useEffect:", {
+      isLoading,
+      isAuthenticated,
+      isAuthorized,
+    });
+    if (!isLoading) {
+      if (!isAuthenticated) {
+        console.log("📊 DashboardLayout: not authenticated, redirect to login");
+        router.push("/connexion");
+      } else if (!isAuthorized) {
+        console.log("📊 DashboardLayout: not authorized");
+      }
     }
-  }, [isLoading, isAuthenticated, router]);
+  }, [isLoading, isAuthenticated, isAuthorized, router]);
 
   if (isLoading) {
-    return <Loading />;
+    return <Loading fullScreen text="Chargement du tableau de bord..." />;
   }
 
   if (!isAuthenticated) {
