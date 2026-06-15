@@ -25,16 +25,14 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (isAuthenticated && user) {
-      setTimeout(() => {
-        const groups = (user as any).groups || [];
-        if (groups.includes("admin") || groups.includes("commercial")) {
-          window.location.href = "/admin";
-        } else {
-          window.location.href = "/dashboard";
-        }
-      }, 100);
+      const groups = (user as any).groups || [];
+      const target =
+        groups.includes("admin") || groups.includes("commercial")
+          ? "/admin"
+          : "/dashboard";
+      router.replace(target);
     }
-  }, [isAuthenticated, user]);
+  }, [isAuthenticated, user, router]);
 
   const {
     register,
