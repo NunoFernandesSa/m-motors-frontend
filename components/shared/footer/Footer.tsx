@@ -9,6 +9,7 @@ import { JSX } from "react";
 import Link from "next/link";
 // ----- Icons -----
 import { Mail, Phone, MapPin } from "lucide-react";
+import { FaFacebook, FaLinkedin, FaTwitter } from "react-icons/fa";
 
 /**
  * Footer component with information about the company and contact information.
@@ -36,6 +37,22 @@ function Footer(): JSX.Element {
                   className="hover:text-primary transition-colors"
                 >
                   Catalogue
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/contact"
+                  className="hover:text-primary transition-colors"
+                >
+                  Contact
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/mentions-legales"
+                  className="hover:text-primary transition-colors"
+                >
+                  Mentions légales
                 </Link>
               </li>
             </ul>
@@ -68,7 +85,7 @@ function Footer(): JSX.Element {
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-primary transition-colors"
               >
-                <span className="sr-only">Facebook</span>
+                <FaFacebook className="h-6 w-6" />
               </a>
               <a
                 href="#"
@@ -76,7 +93,7 @@ function Footer(): JSX.Element {
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-primary transition-colors"
               >
-                <span className="sr-only">Twitter</span>
+                <FaTwitter className="h-6 w-6" />
               </a>
               <a
                 href="#"
@@ -84,7 +101,7 @@ function Footer(): JSX.Element {
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-primary transition-colors"
               >
-                <span className="sr-only">LinkedIn</span>
+                <FaLinkedin className="h-6 w-6" />
               </a>
             </div>
           </div>

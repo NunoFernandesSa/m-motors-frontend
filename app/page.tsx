@@ -6,6 +6,7 @@ import VehicleCard from "@/components/vehicles/VehicleCard";
 import { useVehicleStore } from "@/store/vehicleStore";
 import WhyUsSection from "@/components/shared/WhyUsSection";
 import Navbar from "@/components/shared/navbar/Navbar";
+import Footer from "@/components/shared/footer/Footer";
 
 const HomePage = () => {
   const {
@@ -67,8 +68,6 @@ const HomePage = () => {
 
   return (
     <>
-      <Navbar />
-
       <div className="container mx-auto p-4 space-y-6">
         <WhyUsSection />
 
