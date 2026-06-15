@@ -23,13 +23,23 @@ export default function LoginPage() {
   const { login, isLoading, error, isAuthenticated, user } = useAuthStore();
   const router = useRouter();
 
+  console.log("🔄 LoginPage render state:", {
+    isAuthenticated,
+    user,
+    isLoading,
+  });
+
   useEffect(() => {
+    console.log("🔄 LoginPage useEffect triggered with:", {
+      isAuthenticated,
+      user,
+    });
     if (isAuthenticated && user) {
-      const groups = (user as any).groups || [];
       const target =
-        groups.includes("admin") || groups.includes("commercial")
+        user.role === "admin" || user.role === "commercial"
           ? "/admin"
           : "/dashboard";
+      console.log("🎯 Redirecting to:", target);
       router.push(target);
     }
   }, [isAuthenticated, user, router]);

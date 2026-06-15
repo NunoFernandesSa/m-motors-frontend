@@ -20,6 +20,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   isAuthenticated: false,
 
   login: async (username, password) => {
+    console.log("🔐 Login attempt started");
     set({ isLoading: true, error: null });
     try {
       const response = await fetchWithCredentials(`${API_URL}/auth/login/`, {
@@ -27,13 +28,21 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         body: JSON.stringify({ username, password }),
       });
       const data = await response.json();
+      console.log("📡 Login response:", {
+        ok: response.ok,
+        status: response.status,
+        data,
+      });
+
       if (!response.ok) {
         throw new Error(data.detail || "Identifiants invalides");
       }
       // backend set cookies, fetch user
       await get().fetchUser();
       set({ isLoading: false });
+      console.log("✅ Login completed");
     } catch (error) {
+      console.error("❌ Login error:", error);
       set({ error: (error as Error).message, isLoading: false });
     }
   },
@@ -79,9 +88,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   fetchUser: async () => {
+    console.log("👤 fetchUser started");
     set({ isLoading: true });
     try {
       const response = await fetchWithCredentials(`${API_URL}/auth/me/`);
+      console.log("📡 fetchUser response status:", response.status);
+
       if (response.status === 401) {
         // Refresh token if expired
         try {
@@ -92,17 +104,22 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           );
           if (!retryResponse.ok) throw new Error("Not authenticated");
           const userData = await retryResponse.json();
+          console.log("✅ User data (after refresh):", userData);
           set({ user: userData, isAuthenticated: true, isLoading: false });
           return;
         } catch (refreshError) {
+          console.error("❌ Refresh failed:", refreshError);
           set({ user: null, isAuthenticated: false, isLoading: false });
           return;
         }
       }
       if (!response.ok) throw new Error("Not authenticated");
       const userData = await response.json();
+      console.log("✅ User data:", userData);
+      console.log("✅ Setting isAuthenticated to true and user:", userData);
       set({ user: userData, isAuthenticated: true, isLoading: false });
     } catch (error) {
+      console.error("❌ fetchUser error:", error);
       set({ user: null, isAuthenticated: false, isLoading: false });
     }
   },
