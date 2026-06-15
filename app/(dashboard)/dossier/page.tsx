@@ -17,9 +17,8 @@ export default function MesDossiers() {
   const fetchFolders = async () => {
     if (!user) return;
     try {
-      const token = localStorage.getItem("access_token");
       const listRes = await fetch(`${API_URL}/folders/?user_id=${user.id}`, {
-        headers: { Authorization: `Bearer ${token}` },
+        credentials: "include",
       });
       if (!listRes.ok) throw new Error("Erreur chargement liste");
       const data = await listRes.json();
@@ -29,7 +28,7 @@ export default function MesDossiers() {
       const foldersDetails = await Promise.all(
         folderIds.map(async (id: number) => {
           const detailRes = await fetch(`${API_URL}/folders/${id}/`, {
-            headers: { Authorization: `Bearer ${token}` },
+            credentials: "include",
           });
           if (!detailRes.ok) throw new Error(`Erreur chargement dossier ${id}`);
           return detailRes.json();
@@ -54,10 +53,9 @@ export default function MesDossiers() {
 
     setDeletingId(folderId);
     try {
-      const token = localStorage.getItem("access_token");
       const res = await fetch(`${API_URL}/folders/${folderId}/`, {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
+        credentials: "include",
       });
       if (!res.ok) {
         const errorText = await res.text();

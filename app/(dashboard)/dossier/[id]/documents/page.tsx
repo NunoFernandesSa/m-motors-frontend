@@ -54,10 +54,8 @@ export default function UploadDocumentsPage() {
     if (!id) return;
     const fetchData = async () => {
       try {
-        const token = localStorage.getItem("access_token");
-        if (!token) throw new Error("Non authentifié");
         const res = await fetch(`${API_URL}/folders/${id}/`, {
-          headers: { Authorization: `Bearer ${token}` },
+          credentials: "include",
         });
         if (!res.ok) throw new Error("Dossier non trouvé");
         const data = await res.json();
@@ -104,13 +102,12 @@ export default function UploadDocumentsPage() {
 
     setUploading(true);
     try {
-      const token = localStorage.getItem("access_token");
       // Update folder info (full_name, phone, address, comment)
       await fetch(`${API_URL}/folders/${id}/`, {
         method: "PATCH",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           full_name: data.fullName,
@@ -126,7 +123,7 @@ export default function UploadDocumentsPage() {
         formData.append("file", file);
         const uploadRes = await fetch(`${API_URL}/folders/${id}/documents/`, {
           method: "POST",
-          headers: { Authorization: `Bearer ${token}` },
+          credentials: "include",
           body: formData,
         });
         if (!uploadRes.ok) {
@@ -145,7 +142,7 @@ export default function UploadDocumentsPage() {
       toast.success("Dossier mis à jour avec succès");
       // Refresh folder data
       const refreshed = await fetch(`${API_URL}/folders/${id}/`, {
-        headers: { Authorization: `Bearer ${token}` },
+        credentials: "include",
       });
       const refreshedData = await refreshed.json();
       setFolder(refreshedData);

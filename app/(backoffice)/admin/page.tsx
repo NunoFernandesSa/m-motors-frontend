@@ -25,12 +25,9 @@ export default function AdminDashboard(): JSX.Element {
     setLoading(true);
     setError("");
     try {
-      const token = localStorage.getItem("access_token");
-      if (!token) throw new Error("Non authentifié");
-
       // find all folders (admin has access to all)
       const foldersRes = await fetch(`${API_URL}/folders/`, {
-        headers: { Authorization: `Bearer ${token}` },
+        credentials: "include",
       });
       if (!foldersRes.ok) throw new Error("Erreur chargement dossiers");
       const foldersData = await foldersRes.json();
@@ -40,7 +37,7 @@ export default function AdminDashboard(): JSX.Element {
 
       // find all vehicles (admin has access to all)
       const vehiclesRes = await fetch(`${API_URL}/vehicles/`, {
-        headers: { Authorization: `Bearer ${token}` },
+        credentials: "include",
       });
       if (!vehiclesRes.ok) throw new Error("Erreur chargement véhicules");
       const vehiclesData = await vehiclesRes.json();

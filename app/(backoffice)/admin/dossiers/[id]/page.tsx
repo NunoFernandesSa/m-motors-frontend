@@ -29,9 +29,8 @@ export default function AdminFolderDetailPage(): JSX.Element {
   useEffect(() => {
     const fetchFolder = async () => {
       try {
-        const token = localStorage.getItem("access_token");
         const res = await fetch(`${API_URL}/folders/${id}/`, {
-          headers: { Authorization: `Bearer ${token}` },
+          credentials: "include",
         });
         if (!res.ok) throw new Error("Dossier non trouvé");
         const data = await res.json();
@@ -56,7 +55,6 @@ export default function AdminFolderDetailPage(): JSX.Element {
     setActionLoading(true);
 
     try {
-      const token = localStorage.getItem("access_token");
       const payload: { status: string; comment?: string } = {
         status: newStatus,
       };
@@ -67,9 +65,9 @@ export default function AdminFolderDetailPage(): JSX.Element {
 
       const res = await fetch(`${API_URL}/folders/${id}/validate/`, {
         method: "PATCH",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(payload),
       });
@@ -92,7 +90,7 @@ export default function AdminFolderDetailPage(): JSX.Element {
 
       // reload folder data after validation
       const refreshed = await fetch(`${API_URL}/folders/${id}/`, {
-        headers: { Authorization: `Bearer ${token}` },
+        credentials: "include",
       });
       const refreshedData = await refreshed.json();
 

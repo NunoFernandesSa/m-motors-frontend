@@ -21,9 +21,8 @@ export default function AdminFoldersPage(): JSX.Element {
 
   const fetchFolders = async () => {
     try {
-      const token = localStorage.getItem("access_token");
       const res = await fetch(`${API_URL}/folders/`, {
-        headers: { Authorization: `Bearer ${token}` },
+        credentials: "include",
       });
       if (!res.ok) {
         const errorText = await res.text();
