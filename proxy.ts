@@ -5,15 +5,33 @@ import { jwtDecode } from "jwt-decode";
 interface TokenPayload {
   role?: string;
   groups?: string[];
-  [key: string]: unknown;
 }
 
 export async function proxy(request: NextRequest) {
   const accessToken = request.cookies.get("access_token")?.value;
   const { pathname } = request.nextUrl;
 
-  // 1. Routes publiques
-  const publicPaths = ["/connexion", "/inscription", "/catalogue"];
+  // 1. Pages d’authentification : rediriger vers dashboard/admin si déjà connecté
+  const authPages = ["/connexion", "/inscription"];
+  if (authPages.includes(pathname) && accessToken) {
+    try {
+      const decoded: TokenPayload = jwtDecode(accessToken);
+      const groups = decoded.groups || [];
+      const role = decoded.role;
+      const isAdmin =
+        groups.includes("admin") ||
+        groups.includes("commercial") ||
+        role === "admin" ||
+        role === "commercial";
+      const redirectUrl = isAdmin ? "/admin" : "/dashboard";
+      return NextResponse.redirect(new URL(redirectUrl, request.url));
+    } catch {
+      // Token invalide : on laisse passer (redirection vers connexion plus tard)
+    }
+  }
+
+  // 2. Routes publiques (catalogue)
+  const publicPaths = ["/", "/catalogue"];
   const isPublic = publicPaths.some(
     (path) => pathname === path || pathname.startsWith("/catalogue/"),
   );
@@ -21,36 +39,33 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // 2. Routes protégées (dashboard + backoffice)
+  // 3. Routes protégées (dashboard, admin, dossier) nécessitent un token
   const isDashboard = pathname.startsWith("/dashboard");
   const isBackoffice = pathname.startsWith("/admin");
   const isDossier = pathname.startsWith("/dossier");
 
-  // Pas de token → redirection vers connexion
   if ((isDashboard || isBackoffice || isDossier) && !accessToken) {
-    return NextResponse.redirect(new URL("/connexion", request.url));
+    const response = NextResponse.redirect(new URL("/connexion", request.url));
+    response.cookies.delete("access_token");
+    response.cookies.delete("refresh_token");
+    return response;
   }
 
-  // 3. Vérification du rôle pour le backoffice (admin/commercial)
+  // 4. Vérification des rôles pour le backoffice
   if (isBackoffice && accessToken) {
     try {
       const decoded: TokenPayload = jwtDecode(accessToken);
-      // Adapter selon la structure de ton token : role, groups, ou autre
       const groups = decoded.groups || [];
       const role = decoded.role;
-
       const isAuthorized =
         groups.includes("admin") ||
         groups.includes("commercial") ||
         role === "admin" ||
         role === "commercial";
-
       if (!isAuthorized) {
-        // Redirige l'utilisateur non autorisé vers son dashboard
         return NextResponse.redirect(new URL("/dashboard", request.url));
       }
-    } catch (error) {
-      // Token invalide → déconnexion
+    } catch {
       const response = NextResponse.redirect(
         new URL("/connexion", request.url),
       );
@@ -60,7 +75,6 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  // 4. Tout est ok
   return NextResponse.next();
 }
 
