@@ -25,7 +25,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (isAuthenticated && user) {
-      window.location.reload();
+      window.location.href = "/dashboard";
     }
   }, [isAuthenticated, user]);
 

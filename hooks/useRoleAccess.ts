@@ -2,12 +2,6 @@ import { useEffect } from "react";
 import { useAuthStore } from "@/store/authStore";
 import { useRouter } from "next/navigation";
 
-/**
- * Hook pour protéger les routes selon le rôle de l'utilisateur.
- * @param allowedRoles - Liste des rôles autorisés (ex: ['admin', 'commercial'])
- * @param redirectTo - Chemin de redirection si rôle non autorisé (défaut: '/')
- * @returns { isLoading, isAuthenticated, user }
- */
 export function useRoleAccess(
   allowedRoles: Array<"admin" | "commercial" | "user">,
   redirectTo = "/",
@@ -18,12 +12,16 @@ export function useRoleAccess(
   useEffect(() => {
     if (!isLoading) {
       if (!isAuthenticated) {
-        router.push("/connexion");
+        if (window.location.pathname !== "/connexion") {
+          window.location.href = "/connexion";
+        }
       } else if (user && !allowedRoles.includes(user.role)) {
-        router.push(redirectTo);
+        if (window.location.pathname !== redirectTo) {
+          window.location.href = redirectTo;
+        }
       }
     }
-  }, [isLoading, isAuthenticated, user, allowedRoles, redirectTo, router]);
+  }, [isLoading, isAuthenticated, user, allowedRoles, redirectTo]);
 
   return { isLoading, isAuthenticated, user };
 }

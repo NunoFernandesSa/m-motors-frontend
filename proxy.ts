@@ -23,7 +23,7 @@ export default async function proxy(request: NextRequest) {
         groups.includes("commercial") ||
         role === "admin" ||
         role === "commercial";
-      const redirectUrl = isAdmin ? "/admin" : "/dashboard";
+      const redirectUrl = "/dashboard";
       return NextResponse.redirect(new URL(redirectUrl, request.url));
     } catch {
       // Token invalide : on laisse passer (redirection vers connexion plus tard)
