@@ -17,7 +17,7 @@ import { JSX } from "react";
 export default function BackofficeLayout({
   children,
 }: BackofficeLayoutProps): JSX.Element {
-  const { isLoading } = useRoleAccess(["admin", "commercial"], "/");
+  const { isLoading, isAuthorized } = useRoleAccess(["admin", "commercial"]);
   const pathname = usePathname();
   const { logout } = useAuthStore();
   const router = useRouter();

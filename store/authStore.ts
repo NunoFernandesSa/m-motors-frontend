@@ -32,7 +32,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       }
       // backend set cookies, fetch user
       await get().fetchUser();
-      
+      set({ isLoading: false });
     } catch (error) {
       set({ error: (error as Error).message, isLoading: false });
     }
@@ -59,6 +59,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         throw new Error(errorMsg);
       }
       await get().fetchUser();
+      set({ isLoading: false });
     } catch (error) {
       set({ error: (error as Error).message, isLoading: false });
     }
