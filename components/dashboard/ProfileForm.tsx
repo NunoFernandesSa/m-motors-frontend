@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { API_URL } from "@/constants/api";
-import { useAuthStore } from "@/store/authStore";
+import { useAuthStore, fetchWithCredentials } from "@/store/authStore";
 import { User } from "@/types";
 import { toast } from "sonner";
 import {
@@ -55,13 +55,8 @@ export function ProfileForm({ user }: { user: User }): JSX.Element {
   const onProfileSubmit = async (data: ProfileFormValues) => {
     setIsLoading(true);
     try {
-      const token = localStorage.getItem("access_token");
-      const res = await fetch(`${API_URL}/auth/me/`, {
+      const res = await fetchWithCredentials(`${API_URL}/auth/me/`, {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
         body: JSON.stringify({ username: data.username, email: data.email }),
       });
       if (!res.ok) throw new Error("Erreur lors de la mise à jour");
@@ -78,18 +73,16 @@ export function ProfileForm({ user }: { user: User }): JSX.Element {
   const onPasswordSubmit = async (data: PasswordFormValues) => {
     setIsPasswordLoading(true);
     try {
-      const token = localStorage.getItem("access_token");
-      const res = await fetch(`${API_URL}/auth/change-password/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+      const res = await fetchWithCredentials(
+        `${API_URL}/auth/change-password/`,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            old_password: data.current_password,
+            new_password: data.new_password,
+          }),
         },
-        body: JSON.stringify({
-          old_password: data.current_password,
-          new_password: data.new_password,
-        }),
-      });
+      );
       if (!res.ok) throw new Error("Mot de passe incorrect ou erreur");
       toast.success("Mot de passe changé, veuillez vous reconnecter");
       reset();
