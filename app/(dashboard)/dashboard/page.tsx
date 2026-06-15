@@ -39,9 +39,8 @@ function ClientDashboard() {
     if (!user) return;
     const fetchStats = async () => {
       try {
-        const token = localStorage.getItem("access_token");
         const res = await fetch(`${API_URL}/folders/?user_id=${user.id}`, {
-          headers: { Authorization: `Bearer ${token}` },
+          credentials: "include",
         });
         if (!res.ok) throw new Error("Erreur chargement");
         const data = await res.json();
