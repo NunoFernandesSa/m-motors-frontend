@@ -25,7 +25,13 @@ export interface Vehicle {
   transmission: string;
   color: string;
   description: string;
-  images?: string[];
+  images?: {
+    id: number;
+    image: string;
+    order: number;
+    created_at: string;
+    updated_at: string;
+  }[];
   vehicle_type: "sale" | "rent";
   sale_price?: string;
   rent_price?: string;
@@ -35,6 +41,7 @@ export interface Vehicle {
   updated_at: string;
   price?: string;
 }
+
 export interface VehicleState {
   vehicles: Vehicle[];
   totalCount: number;
@@ -126,7 +133,7 @@ export interface AuthState {
   logout: () => Promise<void>;
   fetchUser: () => Promise<void>;
   initAuth: () => Promise<void>;
-  refreshToken: () => Promise<string>;
+  refreshToken: () => Promise<boolean>;
 }
 
 /**
@@ -142,5 +149,25 @@ export interface Vehicle {
   vehicle_type: "sale" | "rent";
   sale_price?: string;
   rent_price?: string;
-  images?: string[];
+  images?:
+    | {
+        id: number;
+        image: string;
+        order: number;
+        created_at: string;
+        updated_at: string;
+      }[]
+    | undefined;
+}
+
+/**
+ * ----- Loading Component -----
+ * Interface représents a loading component
+ */
+export interface LoadingProps {
+  size?: "sm" | "md" | "lg" | "xl";
+  variant?: "spinner" | "skeleton" | "dots" | "pulse";
+  fullScreen?: boolean;
+  text?: string;
+  className?: string;
 }

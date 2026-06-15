@@ -1,15 +1,28 @@
 "use client";
 
+/**
+ * @license: MIT
+ * @author: nuno fernandes
+ * @Copyright (c) 2026 m-motors. All rights reserved.
+ */
+
+// ----- React/Next -----
 import Image from "next/image";
 import Link from "next/link";
 import { JSX } from "react";
+// ----- Components -----
 import { Card, CardContent, CardHeader } from "../ui/card";
 import { Badge } from "../ui/badge";
+// ----- Types -----
 import { Vehicle } from "@/types";
+// ----- Utils -----
 import { getValidImageUrl } from "@/lib/utils";
 
+// ----- Props -----
 interface VehicleCardProps {
-  vehicle: Vehicle;
+  vehicle: Omit<Vehicle, "images"> & {
+    images?: { id?: number; image: string; order?: number }[];
+  };
 }
 
 /**
@@ -28,7 +41,8 @@ export default function VehicleCard({
   const offerLabel = vehicle.vehicle_type === "sale" ? "Achat" : "Location LLD";
 
   const firstImage = vehicle.images?.[0];
-  const rawImageUrl = firstImage?.image || "";
+  const rawImageUrl =
+    typeof firstImage === "string" ? firstImage : firstImage?.image || "";
   const imageUrl = getValidImageUrl(rawImageUrl);
 
   return (

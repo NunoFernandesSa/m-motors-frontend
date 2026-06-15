@@ -1,7 +1,16 @@
 "use client";
 
+/**
+ * @license: MIT
+ * @author: nuno fernandes
+ * @Copyright (c) 2026 m-motors. All rights reserved.
+ */
+
+// ----- React/Next -----
 import { useState, useEffect, useRef } from "react";
+// ----- Icons -----
 import { Menu, X } from "lucide-react";
+// ----- Components -----
 import Logo from "./Logo";
 import NavLinks from "./NavLinks";
 

@@ -1,6 +1,17 @@
 "use client";
 
+/**
+ * @license: MIT
+ * @author: nuno fernandes
+ * @Copyright (c) 2026 m-motors. All rights reserved.
+ */
+
+// ----- React/Next -----
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+// ----- Zustand -----
 import { useAuthStore } from "@/store/authStore";
+// ----- Icons -----
 import {
   Car,
   LayoutDashboard,
@@ -9,8 +20,6 @@ import {
   ShieldCheck,
   UserPlus,
 } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 
 interface NavLinksProps {
   onClose: () => void;

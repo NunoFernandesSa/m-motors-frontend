@@ -2,14 +2,10 @@
  * @license: MIT
  * @author: nuno fernandes
  * @Copyright (c) 2026 m-motors. All rights reserved.
- * @description: This file contains the Logo component for the M-Motors application.
  */
 
-// ----- React & Next.js Imports -----
-import Image from "next/image";
+// ----- React & Next.js -----
 import Link from "next/link";
-// ----- Image Imports -----
-const logo = "/images/logo.png";
 
 /**
  * M-Motors Logo Component

@@ -4,6 +4,10 @@
  * @Copyright (c) 2026 m-motors. All rights reserved.
  */
 
+// ----- React/Next -----
+import { JSX } from "react";
+// ----- Types -----
+import { ErrorMessageProps } from "@/types";
 // ----- Shadcn UI -----
 import {
   Card,
@@ -15,8 +19,6 @@ import {
 import { Button } from "../ui/button";
 // ----- Icons -----
 import { AlertTriangle } from "lucide-react";
-import { JSX } from "react";
-import { ErrorMessageProps } from "@/types";
 
 /**
  * ErrorMessage component that displays an error message to the user with an optional retry button
