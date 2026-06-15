@@ -1,8 +1,17 @@
 import { create } from "zustand";
 import { API_URL } from "@/constants/api";
 import { AuthState } from "@/types";
-import { deleteCookie, setCookie } from "@/helpers";
-import { jwtDecode } from "jwt-decode";
+
+const fetchWithCredentials = (url: string, options: RequestInit = {}) => {
+  return fetch(url, {
+    ...options,
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
+  });
+};
 
 export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
@@ -13,23 +22,15 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   login: async (username, password) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await fetch(`${API_URL}/auth/login/`, {
+      const response = await fetchWithCredentials(`${API_URL}/auth/login/`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
       });
       const data = await response.json();
       if (!response.ok) {
         throw new Error(data.detail || "Identifiants invalides");
       }
-      // Stock tokens on localStorage
-      localStorage.setItem("access_token", data.access);
-      localStorage.setItem("refresh_token", data.refresh);
-      // Stock tokens on cookies
-      // 15 minutes
-      setCookie("access_token", data.access, 15 * 60);
-      // 7 days
-      setCookie("refresh_token", data.refresh, 7 * 24 * 3600);
+      // backend set cookies, fetch user
       await get().fetchUser();
     } catch (error) {
       set({ error: (error as Error).message, isLoading: false });
@@ -39,9 +40,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   register: async (username, email, password, password2) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await fetch(`${API_URL}/auth/register/`, {
+      const response = await fetchWithCredentials(`${API_URL}/auth/register/`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, email, password, password2 }),
       });
       const data = await response.json();
@@ -57,14 +57,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         }
         throw new Error(errorMsg);
       }
-      // Stocker tokens on localStorage
-      localStorage.setItem("access_token", data.access);
-      localStorage.setItem("refresh_token", data.refresh);
-      // Stock tokens on cookies
-      // 15 minutes
-      setCookie("access_token", data.access, 15 * 60);
-      // 7 days
-      setCookie("refresh_token", data.refresh, 7 * 24 * 3600);
       await get().fetchUser();
     } catch (error) {
       set({ error: (error as Error).message, isLoading: false });
@@ -72,104 +64,63 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   refreshToken: async () => {
-    const refresh = localStorage.getItem("refresh_token");
-    if (!refresh) throw new Error("No refresh token");
-    const response = await fetch(`${API_URL}/auth/refresh/`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ refresh }),
-    });
-    if (!response.ok) throw new Error("Refresh failed");
-    const data = await response.json();
-    localStorage.setItem("access_token", data.access);
-    setCookie("access_token", data.access, 15 * 60);
-    if (data.refresh) {
-      localStorage.setItem("refresh_token", data.refresh);
-      setCookie("refresh_token", data.refresh, 7 * 24 * 3600);
+    try {
+      const response = await fetchWithCredentials(`${API_URL}/auth/refresh/`, {
+        method: "POST",
+        body: JSON.stringify({}),
+      });
+      if (!response.ok) throw new Error("Refresh failed");
+      return true;
+    } catch (error) {
+      throw error;
     }
-    return data.access;
   },
 
   fetchUser: async () => {
-    const token = localStorage.getItem("access_token");
-    if (!token) {
-      set({ user: null, isAuthenticated: false, isLoading: false });
-      return;
-    }
-
-    let groups: string[] = [];
+    set({ isLoading: true });
     try {
-      const decoded = jwtDecode<{ groups?: string[]; role?: string }>(token);
-      groups = decoded.groups || (decoded.role ? [decoded.role] : []);
-    } catch (error) {
-      console.error("Erreur décodage token:", error);
-    }
-
-    const makeRequest = async (t: string) => {
-      return fetch(`${API_URL}/auth/me/`, {
-        headers: { Authorization: `Bearer ${t}` },
-      });
-    };
-
-    try {
-      let response = await makeRequest(token);
+      const response = await fetchWithCredentials(`${API_URL}/auth/me/`);
       if (response.status === 401) {
+        // Refresh token if expired
         try {
-          const newToken = await get().refreshToken();
-          response = await makeRequest(newToken);
-          // Mettre à jour les groupes avec le nouveau token si nécessaire
-          try {
-            const decoded = jwtDecode<{ groups?: string[]; role?: string }>(
-              newToken,
-            );
-            groups = decoded.groups || (decoded.role ? [decoded.role] : []);
-          } catch {}
+          await get().refreshToken();
+          // after refresh, fetch user
+          const retryResponse = await fetchWithCredentials(
+            `${API_URL}/auth/me/`,
+          );
+          if (!retryResponse.ok) throw new Error("Not authenticated");
+          const userData = await retryResponse.json();
+          set({ user: userData, isAuthenticated: true, isLoading: false });
+          return;
         } catch (refreshError) {
-          throw new Error("Refresh failed");
+          set({ user: null, isAuthenticated: false, isLoading: false });
+          return;
         }
       }
-      if (response.ok) {
-        const userData = await response.json();
-        userData.groups = groups;
-        set({ user: userData, isAuthenticated: true, isLoading: false });
-      } else {
-        throw new Error("Invalid token");
-      }
+      if (!response.ok) throw new Error("Not authenticated");
+      const userData = await response.json();
+      set({ user: userData, isAuthenticated: true, isLoading: false });
     } catch (error) {
-      localStorage.removeItem("access_token");
-      localStorage.removeItem("refresh_token");
-      deleteCookie("access_token");
-      deleteCookie("refresh_token");
       set({ user: null, isAuthenticated: false, isLoading: false });
     }
   },
 
   logout: async () => {
     set({ isLoading: true });
-    // const token = localStorage.getItem("access_token");
-    // if (token) {
-    //   try {
-    //     await fetch(`${API_URL}/auth/logout/`, {
-    //       method: "POST",
-    //       headers: { Authorization: `Bearer ${token}` },
-    //     });
-    //   } catch (error) {
-    //     console.error("Logout API error:", error);
-    //   }
-    // }
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("refresh_token");
-    deleteCookie("access_token");
-    deleteCookie("refresh_token");
+    try {
+      await fetchWithCredentials(`${API_URL}/auth/logout/`, {
+        method: "POST",
+      });
+    } catch (error) {
+      console.error("Logout API error:", error);
+    }
+    // Cookies are deleted by the backend
     set({ user: null, isAuthenticated: false, isLoading: false });
   },
 
   initAuth: async () => {
-    const token = localStorage.getItem("access_token");
-    if (token && !get().isAuthenticated) {
+    if (!get().isAuthenticated) {
       await get().fetchUser();
-    } else if (!token) {
-      set({ user: null, isAuthenticated: false, isLoading: false });
     }
   },
 }));

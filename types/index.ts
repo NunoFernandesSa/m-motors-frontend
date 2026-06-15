@@ -133,7 +133,7 @@ export interface AuthState {
   logout: () => Promise<void>;
   fetchUser: () => Promise<void>;
   initAuth: () => Promise<void>;
-  refreshToken: () => Promise<string>;
+  refreshToken: () => Promise<boolean>;
 }
 
 /**
