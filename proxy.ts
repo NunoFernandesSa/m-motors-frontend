@@ -12,23 +12,23 @@ export default async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // 1. Pages d’authentification : rediriger vers dashboard/admin si déjà connecté
-  const authPages = ["/connexion", "/inscription"];
-  if (authPages.includes(pathname) && accessToken) {
-    try {
-      const decoded: TokenPayload = jwtDecode(accessToken);
-      const groups = decoded.groups || [];
-      const role = decoded.role;
-      const isAdmin =
-        groups.includes("admin") ||
-        groups.includes("commercial") ||
-        role === "admin" ||
-        role === "commercial";
-      const redirectUrl = "/dashboard";
-      return NextResponse.redirect(new URL(redirectUrl, request.url));
-    } catch {
-      // Token invalide : on laisse passer (redirection vers connexion plus tard)
-    }
-  }
+  // const authPages = ["/connexion", "/inscription"];
+  // if (authPages.includes(pathname) && accessToken) {
+  //   try {
+  //     const decoded: TokenPayload = jwtDecode(accessToken);
+  //     const groups = decoded.groups || [];
+  //     const role = decoded.role;
+  //     const isAdmin =
+  //       groups.includes("admin") ||
+  //       groups.includes("commercial") ||
+  //       role === "admin" ||
+  //       role === "commercial";
+  //     const redirectUrl = "/dashboard";
+  //     return NextResponse.redirect(new URL(redirectUrl, request.url));
+  //   } catch {
+  //     // Token invalide : on laisse passer (redirection vers connexion plus tard)
+  //   }
+  // }
 
   // 2. Routes publiques (catalogue)
   const publicPaths = ["/", "/catalogue"];
