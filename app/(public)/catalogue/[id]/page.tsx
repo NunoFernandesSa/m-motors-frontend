@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useVehicleStore } from "@/store/vehicleStore";
-import { useAuthStore } from "@/store/authStore";
+import { useAuthStore, fetchWithCredentials } from "@/store/authStore";
 import { Loading } from "@/components/shared/Loading";
 import { toast } from "sonner";
 import { API_URL } from "@/constants/api";
@@ -32,12 +32,8 @@ export default function VehicleDetailPage() {
 
     setCreatingFolder(true);
     try {
-      const folderRes = await fetch(`${API_URL}/folders/`, {
+      const folderRes = await fetchWithCredentials(`${API_URL}/folders/`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
         body: JSON.stringify({
           vehicle: vehicleDetail.id,
           user: user.id,
@@ -50,13 +46,8 @@ export default function VehicleDetailPage() {
         throw new Error(errData.detail || "Erreur création dossier");
       }
 
-      const listRes = await fetch(
+      const listRes = await fetchWithCredentials(
         `${API_URL}/folders/?user_id=${user.id}&ordering=-created_at`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-        },
       );
       if (!listRes.ok)
         throw new Error("Impossible de récupérer la liste des dossiers");

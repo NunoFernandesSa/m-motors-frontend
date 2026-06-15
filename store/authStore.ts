@@ -2,7 +2,11 @@ import { create } from "zustand";
 import { API_URL } from "@/constants/api";
 import { AuthState } from "@/types";
 
-const fetchWithCredentials = (url: string, options: RequestInit = {}) => {
+// Exported to be used in other stores
+export const fetchWithCredentials = (
+  url: string,
+  options: RequestInit = {},
+) => {
   return fetch(url, {
     ...options,
     credentials: "include",
