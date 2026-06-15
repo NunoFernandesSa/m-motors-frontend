@@ -32,6 +32,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       }
       // backend set cookies, fetch user
       await get().fetchUser();
+      
     } catch (error) {
       set({ error: (error as Error).message, isLoading: false });
     }

@@ -30,9 +30,9 @@ export default function LoginPage() {
         groups.includes("admin") || groups.includes("commercial")
           ? "/admin"
           : "/dashboard";
-      router.replace(target);
+      window.location.href = target;
     }
-  }, [isAuthenticated, user, router]);
+  }, [isAuthenticated, user]);
 
   const {
     register,
