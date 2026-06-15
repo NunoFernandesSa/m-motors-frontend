@@ -16,23 +16,27 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { LoginFormValues, loginSchema } from "@/zod";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 
 export default function LoginPage() {
   const { login, isLoading, error, isAuthenticated, user } = useAuthStore();
   const router = useRouter();
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   useEffect(() => {
-    if (isAuthenticated && user) {
+    if (isAuthenticated && user && !isRedirecting) {
+      setIsRedirecting(true);
       const groups = (user as any).groups || [];
       if (groups.includes("admin") || groups.includes("commercial")) {
         router.push("/admin");
       } else {
         router.push("/dashboard");
       }
+      // Refresh the layout to ensure the user is logged in
+      router.refresh();
     }
-  }, [isAuthenticated, user, router]);
+  }, [isAuthenticated, user, router, isRedirecting]);
 
   const {
     register,
@@ -49,6 +53,14 @@ export default function LoginPage() {
   const onSubmit = async (data: LoginFormValues) => {
     await login(data.username, data.password);
   };
+
+  if (isRedirecting) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        Redirection...
+      </div>
+    );
+  }
 
   return (
     <div className="flex justify-center items-center min-h-screen px-4">
