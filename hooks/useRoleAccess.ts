@@ -10,8 +10,20 @@ export function useRoleAccess(
   const router = useRouter();
 
   useEffect(() => {
+    console.log(
+      "[useRoleAccess] isLoading:",
+      isLoading,
+      "isAuthenticated:",
+      isAuthenticated,
+      "user:",
+      user,
+    );
     if (!isLoading) {
       if (!isAuthenticated) {
+        console.log(
+          "[useRoleAccess] Pas authentifié → redirection vers /connexion",
+        );
+
         if (window.location.pathname !== "/connexion") {
           window.location.href = "/connexion";
         }

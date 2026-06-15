@@ -23,12 +23,6 @@ export default function LoginPage() {
   const { login, isLoading, error, isAuthenticated, user } = useAuthStore();
   const router = useRouter();
 
-  useEffect(() => {
-    if (isAuthenticated && user) {
-      window.location.href = "/dashboard";
-    }
-  }, [isAuthenticated, user]);
-
   const {
     register,
     handleSubmit,
