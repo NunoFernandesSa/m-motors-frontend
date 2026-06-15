@@ -1,36 +1,26 @@
 import { useEffect } from "react";
 import { useAuthStore } from "@/store/authStore";
-import { useRouter } from "next/navigation";
 
 export function useRoleAccess(
   allowedRoles: Array<"admin" | "commercial" | "user">,
   redirectTo = "/",
 ) {
   const { user, isAuthenticated, isLoading } = useAuthStore();
-  const router = useRouter();
 
   useEffect(() => {
-    console.log(
-      "[useRoleAccess] isLoading:",
-      isLoading,
-      "isAuthenticated:",
-      isAuthenticated,
-      "user:",
-      user,
-    );
     if (!isLoading) {
-      if (!isAuthenticated) {
-        console.log(
-          "[useRoleAccess] Pas authentifié → redirection vers /connexion",
-        );
-
-        if (window.location.pathname !== "/connexion") {
-          window.location.href = "/connexion";
-        }
-      } else if (user && !allowedRoles.includes(user.role)) {
-        if (window.location.pathname !== redirectTo) {
-          window.location.href = redirectTo;
-        }
+      if (!isAuthenticated && window.location.pathname !== "/connexion") {
+        window.location.href = "/connexion";
+      } else if (
+        user &&
+        !allowedRoles.includes(user.role) &&
+        window.location.pathname !== redirectTo
+      ) {
+        setTimeout(() => {
+          if (window.location.pathname !== redirectTo) {
+            window.location.href = redirectTo;
+          }
+        }, 50);
       }
     }
   }, [isLoading, isAuthenticated, user, allowedRoles, redirectTo]);

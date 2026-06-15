@@ -23,6 +23,17 @@ export default function LoginPage() {
   const { login, isLoading, error, isAuthenticated, user } = useAuthStore();
   const router = useRouter();
 
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      const groups = (user as any).groups || [];
+      const target =
+        groups.includes("admin") || groups.includes("commercial")
+          ? "/admin"
+          : "/dashboard";
+      router.replace(target);
+    }
+  }, [isAuthenticated, user, router]);
+
   const {
     register,
     handleSubmit,
