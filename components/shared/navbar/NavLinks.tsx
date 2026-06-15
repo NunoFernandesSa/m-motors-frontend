@@ -34,9 +34,7 @@ const NavLinks = ({ onClose }: NavLinksProps) => {
   const router = useRouter();
   const { user, logout } = useAuthStore();
 
-  const isAdmin =
-    (user as unknown as { groups?: string[] })?.groups?.includes("admin") ||
-    (user as unknown as { groups?: string[] })?.groups?.includes("commercial");
+  const isAdmin = user?.role === "admin" || user?.role === "commercial";
 
   const handleLogout = async () => {
     await logout();

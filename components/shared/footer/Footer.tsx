@@ -32,34 +32,10 @@ function Footer(): JSX.Element {
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
                 <Link
-                  href="/vehicles"
+                  href="/catalogue"
                   className="hover:text-primary transition-colors"
                 >
                   Catalogue
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/location"
-                  className="hover:text-primary transition-colors"
-                >
-                  Location LLD
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/achat"
-                  className="hover:text-primary transition-colors"
-                >
-                  Achat
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/contact"
-                  className="hover:text-primary transition-colors"
-                >
-                  Contact
                 </Link>
               </li>
             </ul>
