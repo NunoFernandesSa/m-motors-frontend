@@ -6,6 +6,7 @@ import React, { ReactNode, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useRoleAccess } from "@/hooks/useRoleAccess";
 import { Loading } from "@/components/shared/Loading";
+import { useAuthStore } from "@/store/authStore";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
@@ -14,12 +15,18 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     "commercial",
     "user",
   ]);
+  const fetchUser = useAuthStore((state) => state.fetchUser);
 
   console.log("📊 DashboardLayout render:", {
     isLoading,
     isAuthenticated,
     isAuthorized,
   });
+
+  // Re-fetch user when layout mounts to ensure auth state is fresh
+  useEffect(() => {
+    fetchUser();
+  }, [fetchUser]);
 
   useEffect(() => {
     console.log("📊 DashboardLayout useEffect:", {

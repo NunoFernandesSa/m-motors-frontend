@@ -38,7 +38,7 @@ const NavLinks = ({ onClose }: NavLinksProps) => {
 
   const handleLogout = async () => {
     await logout();
-    router.push("/catalogue");
+    router.replace("/connexion");
     onClose();
   };
 
