@@ -15,4 +15,5 @@ export const ADMIN_NAV_LINKS = [
   { href: "/admin", label: "Dashboard" },
   { href: "/admin/vehicules", label: "Véhicules" },
   { href: "/admin/dossiers", label: "Dossiers" },
+  { href: "/catalogue", label: "Catalogue" },
 ];

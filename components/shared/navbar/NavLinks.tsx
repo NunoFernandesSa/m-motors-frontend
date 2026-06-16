@@ -56,7 +56,7 @@ const NavLinks = ({ onClose }: NavLinksProps) => {
         <Car className="h-4 w-4" />
         Catalogue
       </Link>
-      {user && (
+      {user && !isAdmin && (
         <Link
           href="/dashboard"
           onClick={handleLinkClick}
