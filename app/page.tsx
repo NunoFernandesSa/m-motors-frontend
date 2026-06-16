@@ -68,6 +68,7 @@ const HomePage = () => {
 
   return (
     <>
+      <Navbar />
       <div className="container mx-auto p-4 space-y-6">
         <WhyUsSection />
 
