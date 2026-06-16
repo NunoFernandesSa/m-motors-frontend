@@ -2,12 +2,9 @@ import { create } from "zustand";
 import { API_URL } from "@/constants/api";
 import { AuthState } from "@/types";
 
-// Exported to be used in other stores
-export const fetchWithCredentials = async (
-  url: string,
-  options: RequestInit = {},
-) => {
-  let response = await fetch(url, {
+// Raw fetch function without refresh logic (to avoid infinite loops)
+const rawFetchWithCredentials = (url: string, options: RequestInit = {}) => {
+  return fetch(url, {
     ...options,
     credentials: "include",
     headers: {
@@ -15,31 +12,9 @@ export const fetchWithCredentials = async (
       ...options.headers,
     },
   });
-
-  if (response.status === 401) {
-    // Try to refresh the token
-    const authStore = useAuthStore.getState();
-    try {
-      await authStore.refreshToken();
-      // Retry the original request
-      response = await fetch(url, {
-        ...options,
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-          ...options.headers,
-        },
-      });
-    } catch (refreshError) {
-      // Refresh failed, log out user
-      authStore.logout();
-      throw refreshError;
-    }
-  }
-
-  return response;
 };
 
+// Create the store first
 export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
   isLoading: false,
@@ -50,7 +25,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     console.log("🔐 Login attempt started");
     set({ isLoading: true, error: null });
     try {
-      const response = await fetchWithCredentials(`${API_URL}/auth/login/`, {
+      const response = await rawFetchWithCredentials(`${API_URL}/auth/login/`, {
         method: "POST",
         body: JSON.stringify({ username, password }),
       });
@@ -77,10 +52,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   register: async (username, email, password, password2) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await fetchWithCredentials(`${API_URL}/auth/register/`, {
-        method: "POST",
-        body: JSON.stringify({ username, email, password, password2 }),
-      });
+      const response = await rawFetchWithCredentials(
+        `${API_URL}/auth/register/`,
+        {
+          method: "POST",
+          body: JSON.stringify({ username, email, password, password2 }),
+        },
+      );
       const data = await response.json();
       if (!response.ok) {
         let errorMsg = "L'inscription a échoué";
@@ -103,10 +81,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   refreshToken: async () => {
     try {
-      const response = await fetchWithCredentials(`${API_URL}/auth/refresh/`, {
-        method: "POST",
-        body: JSON.stringify({}),
-      });
+      const response = await rawFetchWithCredentials(
+        `${API_URL}/auth/refresh/`,
+        {
+          method: "POST",
+          body: JSON.stringify({}),
+        },
+      );
       if (!response.ok) throw new Error("Refresh failed");
       return true;
     } catch (error) {
@@ -118,7 +99,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     console.log("👤 fetchUser started");
     set({ isLoading: true });
     try {
-      const response = await fetchWithCredentials(`${API_URL}/auth/me/`);
+      const response = await rawFetchWithCredentials(`${API_URL}/auth/me/`);
       console.log("📡 fetchUser response status:", response.status);
 
       if (response.status === 401) {
@@ -126,7 +107,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         try {
           await get().refreshToken();
           // after refresh, fetch user
-          const retryResponse = await fetchWithCredentials(
+          const retryResponse = await rawFetchWithCredentials(
             `${API_URL}/auth/me/`,
           );
           if (!retryResponse.ok) throw new Error("Not authenticated");
@@ -154,7 +135,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   logout: async () => {
     set({ isLoading: true });
     try {
-      await fetchWithCredentials(`${API_URL}/auth/logout/`, {
+      await rawFetchWithCredentials(`${API_URL}/auth/logout/`, {
         method: "POST",
       });
     } catch (error) {
@@ -170,3 +151,27 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
   },
 }));
+
+// Exported to be used in other stores (now uses the store correctly!)
+export const fetchWithCredentials = async (
+  url: string,
+  options: RequestInit = {},
+) => {
+  let response = await rawFetchWithCredentials(url, options);
+
+  if (response.status === 401) {
+    // Try to refresh the token
+    const authStore = useAuthStore.getState();
+    try {
+      await authStore.refreshToken();
+      // Retry the original request
+      response = await rawFetchWithCredentials(url, options);
+    } catch (refreshError) {
+      // Refresh failed, log out user
+      authStore.logout();
+      throw refreshError;
+    }
+  }
+
+  return response;
+};

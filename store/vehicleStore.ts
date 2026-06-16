@@ -3,15 +3,23 @@ import { create } from "zustand";
 import { API_URL } from "@/constants/api";
 import { fetchWithCredentials, useAuthStore } from "./authStore";
 
+// Raw fetch for FormData without refresh logic
+const rawFetchFormData = (
+  url: string,
+  options: RequestInit = {},
+) => {
+  return fetch(url, {
+    ...options,
+    credentials: "include",
+  });
+};
+
 // Helper function for FormData requests that also handles token refresh
 const fetchWithCredentialsFormData = async (
   url: string,
   options: RequestInit = {},
 ) => {
-  let response = await fetch(url, {
-    ...options,
-    credentials: "include",
-  });
+  let response = await rawFetchFormData(url, options);
 
   if (response.status === 401) {
     // Try to refresh the token
@@ -19,10 +27,7 @@ const fetchWithCredentialsFormData = async (
     try {
       await authStore.refreshToken();
       // Retry the original request
-      response = await fetch(url, {
-        ...options,
-        credentials: "include",
-      });
+      response = await rawFetchFormData(url, options);
     } catch (refreshError) {
       // Refresh failed, log out user
       authStore.logout();
