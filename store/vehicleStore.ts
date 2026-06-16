@@ -1,17 +1,36 @@
 import { Vehicle, VehicleState } from "@/types";
 import { create } from "zustand";
 import { API_URL } from "@/constants/api";
-import { fetchWithCredentials } from "./authStore";
+import { fetchWithCredentials, useAuthStore } from "./authStore";
 
-// Helper function for FormData requests (don't set Content-Type header)
-const fetchWithCredentialsFormData = (
+// Helper function for FormData requests that also handles token refresh
+const fetchWithCredentialsFormData = async (
   url: string,
   options: RequestInit = {},
 ) => {
-  return fetch(url, {
+  let response = await fetch(url, {
     ...options,
     credentials: "include",
   });
+
+  if (response.status === 401) {
+    // Try to refresh the token
+    const authStore = useAuthStore.getState();
+    try {
+      await authStore.refreshToken();
+      // Retry the original request
+      response = await fetch(url, {
+        ...options,
+        credentials: "include",
+      });
+    } catch (refreshError) {
+      // Refresh failed, log out user
+      authStore.logout();
+      throw refreshError;
+    }
+  }
+
+  return response;
 };
 
 const initialFilters = {

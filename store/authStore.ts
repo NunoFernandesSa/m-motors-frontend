@@ -3,11 +3,11 @@ import { API_URL } from "@/constants/api";
 import { AuthState } from "@/types";
 
 // Exported to be used in other stores
-export const fetchWithCredentials = (
+export const fetchWithCredentials = async (
   url: string,
   options: RequestInit = {},
 ) => {
-  return fetch(url, {
+  let response = await fetch(url, {
     ...options,
     credentials: "include",
     headers: {
@@ -15,6 +15,29 @@ export const fetchWithCredentials = (
       ...options.headers,
     },
   });
+
+  if (response.status === 401) {
+    // Try to refresh the token
+    const authStore = useAuthStore.getState();
+    try {
+      await authStore.refreshToken();
+      // Retry the original request
+      response = await fetch(url, {
+        ...options,
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          ...options.headers,
+        },
+      });
+    } catch (refreshError) {
+      // Refresh failed, log out user
+      authStore.logout();
+      throw refreshError;
+    }
+  }
+
+  return response;
 };
 
 export const useAuthStore = create<AuthState>((set, get) => ({
