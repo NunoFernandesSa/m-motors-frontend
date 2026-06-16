@@ -1,6 +1,6 @@
 "use client";
 
-import React, { ReactNode, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useRoleAccess } from "@/hooks/useRoleAccess";
 import { Loading } from "@/components/shared/Loading";

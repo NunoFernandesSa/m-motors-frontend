@@ -28,13 +28,11 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
     }
   }, [isLoading, isAuthenticated, user, router]);
 
-  if (isLoading) {
-    return <Loading fullScreen text="Vérification de l'authentification..." />;
-  }
-
+  // Seulement afficher le Loading en plein écran SI ON EST DÉJÀ AUTHENTIFIÉ (redirection)
   if (isAuthenticated && user) {
     return <Loading fullScreen text="Redirection..." />;
   }
 
+  // Sinon, afficher le formulaire (même si isLoading est true, on ne bloque pas l'UI)
   return <div>{children}</div>;
 }

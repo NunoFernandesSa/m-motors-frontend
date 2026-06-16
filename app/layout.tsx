@@ -27,7 +27,6 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col font-sans">
         <AuthProvider>
           <Toaster position="top-right" richColors closeButton />
-          <Navbar />
           {children}
           <Footer />
         </AuthProvider>
