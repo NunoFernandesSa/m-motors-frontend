@@ -4,10 +4,7 @@ import { API_URL } from "@/constants/api";
 import { fetchWithCredentials, useAuthStore } from "./authStore";
 
 // Raw fetch for FormData without refresh logic
-const rawFetchFormData = (
-  url: string,
-  options: RequestInit = {},
-) => {
+const rawFetchFormData = (url: string, options: RequestInit = {}) => {
   return fetch(url, {
     ...options,
     credentials: "include",
