@@ -38,8 +38,11 @@ export default function ImageGallery({
 
   // get full image URL with API_URL prefix
   const getFullUrl = (url: string) => {
+    console.log("🖼️ getFullUrl input:", url);
     if (url.startsWith("http")) return url;
-    return `${API_URL}${url}`;
+    const fullUrl = `${API_URL}${url}`;
+    console.log("🖼️ getFullUrl output:", fullUrl);
+    return fullUrl;
   };
 
   // update buttons state when image gallery is mounted

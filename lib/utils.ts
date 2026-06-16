@@ -13,5 +13,7 @@ export const getValidImageUrl = (url: string | undefined | null): string => {
   if (url.startsWith("http://") || url.startsWith("https://")) {
     return url;
   }
-  return `${API_URL}${url}`;
+  const fullUrl = `${API_URL}${url}`;
+
+  return fullUrl;
 };
