@@ -55,7 +55,9 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
     <>
       <Navbar />
-      <main className="flex-1 container mx-auto py-8">{children}</main>
+      <main className="flex-1 container mx-auto py-8 px-2 lg:px-8">
+        {children}
+      </main>
     </>
   );
 }

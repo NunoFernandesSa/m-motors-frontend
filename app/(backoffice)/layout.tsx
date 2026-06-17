@@ -41,5 +41,5 @@ export default function AdminLayout({
     return null;
   }
 
-  return <main className="flex-1 p-6">{children}</main>;
+  return <main className="flex-1 p-6 px-2 lg:px-8">{children}</main>;
 }

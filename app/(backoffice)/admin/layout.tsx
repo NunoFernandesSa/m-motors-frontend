@@ -59,7 +59,7 @@ export default function BackofficeLayout({
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 p-6">{children}</main>
+      <main className="flex-1 p-6 px-2 lg:px-8">{children}</main>
     </div>
   );
 }
