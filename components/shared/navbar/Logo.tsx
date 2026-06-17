@@ -5,6 +5,7 @@
  */
 
 // ----- React & Next.js -----
+import Image from "next/image";
 import Link from "next/link";
 
 /**
@@ -14,8 +15,9 @@ import Link from "next/link";
  */
 function Logo() {
   return (
-    <Link href="/" className="font-bold text-xl text-blue-600">
-      M-Motors
+    <Link href="/" className="flex items-center">
+      <Image src="/images/logo.png" alt="M-Motors" width={58} height={58} />
+      <span className="text-3xl font-extrabold text-primary">M-Motors</span>
     </Link>
   );
 }

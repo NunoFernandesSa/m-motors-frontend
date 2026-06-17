@@ -1,10 +1,9 @@
-import { Geist, Lato } from "next/font/google";
+import { Lato } from "next/font/google";
 import "@styles/globals.css";
 import { Toaster } from "sonner";
 import AuthProvider from "@/components/providers/AuthProvider";
 import { Metadata } from "next";
 import Footer from "@/components/shared/footer/Footer";
-import Navbar from "@/components/shared/navbar/Navbar";
 
 const lato = Lato({
   weight: ["300", "400", "700"],
@@ -13,8 +12,9 @@ const lato = Lato({
 });
 
 export const metadata: Metadata = {
-  title: "M-Motors",
-  description: "Achat et location de véhicules",
+  title: "M-Motors - Achat et Location de Véhicules",
+  description:
+    "Découvrez notre gamme de véhicules d\'occasion en excellent état. Achat et location longue durée (LLD).",
 };
 
 export default function RootLayout({
